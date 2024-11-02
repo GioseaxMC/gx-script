@@ -1,0 +1,9 @@
+#include <stdlib.gx>
+
+"foo" "foo"
+
+swap strdup2 strcmp if
+    "the strings '" puts puts "' and '" puts puts "' are equal\n" puts
+else
+    "the strings '" puts puts "' and '" puts puts "' are not equal\n" puts
+end

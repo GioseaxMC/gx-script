@@ -1,0 +1,4 @@
+512 0 while swap dup rotate rotate swap dup rotate rotate > do
+    "stress test '" puts print "'\n" puts
+    1 +
+end

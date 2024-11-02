@@ -1,0 +1,4 @@
+#include <stdlib.gx>
+
+5 5 * print
+25 / dump

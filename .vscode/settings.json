@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "*.gsite": "xml",
+        "*.gx": "ruby",
+        "ostream": "cpp",
+        "iostream": "cpp",
+        "numeric": "cpp"
+    },
+    "javascript.validate.enable": false,
+    "typescript.validate.enable": false,
+    "[ruby]": {
+        "editor.unicodeHighlight.includeComments": false
+    }
+}

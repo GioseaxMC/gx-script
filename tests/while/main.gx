@@ -1,0 +1,14 @@
+#include <stdlib.gx>
+
+16 0
+while dup_2 > do
+  print space
+  1 +
+  8 0
+  while dup_2 > do
+    print space
+    1 +
+  end
+  drop2
+  newl
+end

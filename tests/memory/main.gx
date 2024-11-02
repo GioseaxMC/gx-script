@@ -1,0 +1,24 @@
+#include <stdlib.gx>
+
+
+# alloc size for 2 integers
+2 sizeof(int) * malloc
+# dup so to keep the original at the end of the stack
+dup
+
+# write 3 to the pointer
+3 W.int
+
+# print the pointer's val
+R.int dump newl
+# increment pointer
+1 int.move
+
+# write 4 to the second pointer pos
+4 W.int
+
+# print the pointer's 2th val
+R.int dump newl
+
+#free the memory
+drop stack_dump free

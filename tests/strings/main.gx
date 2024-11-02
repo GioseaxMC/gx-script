@@ -1,0 +1,11 @@
+#include <stdlib.gx>
+
+12 0 while dup_2 > do
+    12 0 while dup_2 > do
+        "\t+ " puts
+        1 +
+    end
+    "\n" puts
+    drop2
+    1 +
+end
