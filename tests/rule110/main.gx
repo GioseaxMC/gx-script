@@ -4,20 +4,24 @@
 # RULE 110 implementation |
 # ========================/
 
+#define BUFF_SIZE 128
+#define HALF_SIZE 64
+#define ITERATIONS 64
+
 # starting pattern (backwards)
-1 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0
+1 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0
 
 # declaration of int buffers
-65 sizeof(int) * malloc
+BUFF_SIZE ++ sizeof(int) * malloc
 #load to the first pointer array
 
 # addr idx -- addr (with idx written in position 64)
 #define W.idx \
-    swap dup 64 int.move rotate W.int drop
+    swap dup BUFF_SIZE int.move rotate W.int drop
 
 # addr -- addr idx
 #define R.idx \
-    dup 64 int.move R.int swap drop
+    dup BUFF_SIZE int.move R.int swap drop
 
 #define U.idx \
     W.idx \
@@ -32,7 +36,7 @@
     R.idx
 
 #define prepare_buffer \
-    0 while dup 32 < do \
+    0 while dup HALF_SIZE < do \
         U.idx \
         load_to_buff \
         ++ \
@@ -40,7 +44,7 @@
 
 # idx -- idx bool
 #define out_of_bounds \
-    dup 31 > swap dup 0 < rotate ||
+    dup HALF_SIZE -- > swap dup 0 < rotate ||
 
 # addr idx -- addr idx int
 #define read_buff \
@@ -67,30 +71,46 @@
 #define eval_bit \
     dup 0 = if \
         0 \
-    else dup 1 = if \
-        1 \
-    else dup 2 = if \
-        1 \
-    else dup 3 = if \
-        1 \
-    else dup 4 = if \
-        0 \
-    else dup 5 = if \
-        1 \
-    else dup 6 = if \
-        1 \
-    else dup 7 = if \
-        0 \
-    end end end end end end end end swap drop
+    else \
+        dup 1 = if \
+            1 \
+        else \
+            dup 2 = if \
+                1 \
+            else \
+                dup 3 = if \
+                    1 \
+                else \
+                    dup 4 = if \
+                        0 \
+                    else \
+                        dup 5 = if \
+                            1 \
+                        else \
+                            dup 6 = if \
+                                1 \
+                            else \
+                                dup 7 = if \
+                                    0 \
+                                else \
+                                    0 \
+                                end \
+                            end \
+                        end \
+                    end \
+                end \
+            end \
+        end \
+    end swap drop
 
 # addr idx -- int int int addr idx
 #define read_three \
     dup_second \
-    -- "reading bit at: " puts println \
+    -- \
     read_bit_at rotate rotate \
-    ++ "reading bit at: " puts println \
+    ++ \
     read_bit_at rotate rotate \
-    ++ "reading bit at: " puts println \
+    ++ \
     read_bit_at rotate rotate \
     --
 
@@ -100,15 +120,15 @@
 #define swap_by_id \
     dup_2 int.move R.int \
     rotate rotate \
-    32 int.move R.int \
-    swap -32 int.move \
+    HALF_SIZE int.move R.int \
+    swap -HALF_SIZE int.move \
     swap W.int \
-    32 int.move \
+    HALF_SIZE int.move \
     rotate W.int drop \
 
 # addr -- addr
 #define swap_buffers \
-    0 while dup 32 < do \
+    0 while dup HALF_SIZE < do \
         swap_by_id \
         ++ \
     end drop
@@ -117,7 +137,7 @@
 # ad id - ad id ad id - ad id ad+ - ad id ad+ int - 
 # ad id ad+ int - ad ad+ int id - print - ad ad+ id int - 
 #define buffer_dump \
-    0 while dup 64 < do \
+    0 while dup BUFF_SIZE < do \
         dup_2 \
         int.move \
         R.int rotate print swap "\t" puts dump swap drop newl \
@@ -127,22 +147,23 @@
 # ad -- ad
 # ad id - ad id ad id - ad id ad+ - ad id ad+ int - ad id ad+ - ad id - ad id++
 #define dump_32 \
-    0 while dup 32 < do \
+    0 while dup HALF_SIZE < do \
         dup_2 \
         int.move \
-        R.int space \
-        dump \
+        R.int \
+        if "G" else "-" end puts space \
         drop \
         ++ \
     end drop newl
 
 # addr idx -- addr idx
+# ad id - int int int ad id - 
 #define read_and_write \
     read_three \
     W.idx \
     to_dec eval_bit \
     swap R.idx \
-    32 + int.move \
+    HALF_SIZE + int.move \
     swap W.int \
     drop R.idx
 
@@ -151,15 +172,13 @@
 
 prepare_buffer
 
-0 while dup 256 < do
+0 while dup ITERATIONS < do
     swap
-    0 while dup 32 < do
+    0 while dup HALF_SIZE < do
         read_and_write
         ++
     end drop
-    stk
     dump_32
-    stk
     swap_buffers
     swap
     ++
