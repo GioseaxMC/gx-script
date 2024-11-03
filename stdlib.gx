@@ -8,6 +8,9 @@
         swap dup_third_str \
         swap dup_third_str
 
+#define dup_second \
+        swap dup rotate
+
 #define stk stack_dump pause
 #define drop2 drop drop
 #define putsln puts newl
@@ -30,6 +33,9 @@
         sizeof(char) * +
 #define byte.move \
         sizeof(byte) * +
+
+#define ++ 1 +
+#define -- 1 -
 
 #define False 0
 #define True  1

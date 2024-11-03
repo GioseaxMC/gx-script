@@ -8,30 +8,159 @@
 1 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0
 
 # declaration of int buffers
-33 sizeof(int) * malloc
-
+65 sizeof(int) * malloc
 #load to the first pointer array
 
-# addr -- addr int
-#define get_idx \
-    dup 32 int.move R.int swap drop
+# addr idx -- addr (with idx written in position 64)
+#define W.idx \
+    swap dup 64 int.move rotate W.int drop
 
-# addr int -- addr
-#define set_idx \
-    swap dup 32 int.move rotate W.int drop
+# addr -- addr idx
+#define R.idx \
+    dup 64 int.move R.int swap drop
+
+#define U.idx \
+    W.idx \
+    R.idx
 
 # int addr idx -- addr idx
+# i ad id - i ad ad id - i ad ad+ - ad ad+ i - ad ad+ - ad - ad id
 #define load_to_buff \
-    swap dup rotate int.move \
+    dup_second int.move \
     rotate W.int \
     drop \
-    get_idx
+    R.idx
 
-0 while dup 32 < do
-    set_idx
-    get_idx
-    load_to_buff
-    1 +
-end drop
+#define prepare_buffer \
+    0 while dup 32 < do \
+        U.idx \
+        load_to_buff \
+        ++ \
+    end drop \
 
-31 int.move R.int dump newl
+# idx -- idx bool
+#define out_of_bounds \
+    dup 31 > swap dup 0 < rotate ||
+
+# addr idx -- addr idx int
+#define read_buff \
+    swap dup_to_third swap \
+    dup_to_third int.move \
+    R.int \
+    swap drop
+
+# addr idx -- addr idx int
+#define read_bit_at \
+    out_of_bounds if \
+        0 \
+    else \
+        read_buff end
+
+# int int int id -- id int
+#define to_dec \
+    swap rotate \
+    2 * + \
+    rotate \
+    4 * + 
+
+# int -- int
+#define eval_bit \
+    dup 0 = if \
+        0 \
+    else dup 1 = if \
+        1 \
+    else dup 2 = if \
+        1 \
+    else dup 3 = if \
+        1 \
+    else dup 4 = if \
+        0 \
+    else dup 5 = if \
+        1 \
+    else dup 6 = if \
+        1 \
+    else dup 7 = if \
+        0 \
+    end end end end end end end end swap drop
+
+# addr idx -- int int int addr idx
+#define read_three \
+    dup_second \
+    -- "reading bit at: " puts println \
+    read_bit_at rotate rotate \
+    ++ "reading bit at: " puts println \
+    read_bit_at rotate rotate \
+    ++ "reading bit at: " puts println \
+    read_bit_at rotate rotate \
+    --
+
+# addr idx -- addr idx
+# addr idx - addr idx addr idx - ad id ad+ - ad id ad+ int -- ad int id ad+ -- ad int id ad+32
+# ad int id ad+32 int32 -- ad int id int32 ad+ - ad int id ad+ int32 - ad int id ad+ -- ad int id ad+32 - ad id ad+32 int - ad id ad+32 - ad id
+#define swap_by_id \
+    dup_2 int.move R.int \
+    rotate rotate \
+    32 int.move R.int \
+    swap -32 int.move \
+    swap W.int \
+    32 int.move \
+    rotate W.int drop \
+
+# addr -- addr
+#define swap_buffers \
+    0 while dup 32 < do \
+        swap_by_id \
+        ++ \
+    end drop
+
+# addr -- addr
+# ad id - ad id ad id - ad id ad+ - ad id ad+ int - 
+# ad id ad+ int - ad ad+ int id - print - ad ad+ id int - 
+#define buffer_dump \
+    0 while dup 64 < do \
+        dup_2 \
+        int.move \
+        R.int rotate print swap "\t" puts dump swap drop newl \
+        ++ \
+    end drop
+
+# ad -- ad
+# ad id - ad id ad id - ad id ad+ - ad id ad+ int - ad id ad+ - ad id - ad id++
+#define dump_32 \
+    0 while dup 32 < do \
+        dup_2 \
+        int.move \
+        R.int space \
+        dump \
+        drop \
+        ++ \
+    end drop newl
+
+# addr idx -- addr idx
+#define read_and_write \
+    read_three \
+    W.idx \
+    to_dec eval_bit \
+    swap R.idx \
+    32 + int.move \
+    swap W.int \
+    drop R.idx
+
+
+# main:
+
+prepare_buffer
+
+0 while dup 256 < do
+    swap
+    0 while dup 32 < do
+        read_and_write
+        ++
+    end drop
+    stk
+    dump_32
+    stk
+    swap_buffers
+    swap
+    ++
+end

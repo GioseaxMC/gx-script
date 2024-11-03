@@ -349,7 +349,9 @@ void push_to(vector<void*> &stack, void* value){
 }
 
 void parse_program(vector<string> tokens, vector<action> &temp){
-    for(string str : tokens) {
+    string str;
+    for(int i=0; i<tokens.size(); ++i) {
+        str = tokens[i];
         if (str == "dump") {
             temp.push_back(dump());
         } elif (str == "dup") {
@@ -420,7 +422,7 @@ void parse_program(vector<string> tokens, vector<action> &temp){
             temp.push_back(_or());
         }
         else {
-            printf("unknown instruction: %s\n", str.c_str());
+            printf("unknown instruction '%s' at position '%i'\n", str.c_str(), i);
         }
     }
 }
@@ -449,7 +451,6 @@ void compute_crossreference(vector<action> &acts) {
             if (!op_stack.empty()) {
                 deref(int, op_stack.back()->value) = i;
             }
-            op_stack.pop_back(); // Pop the last 'IF' or 'ELSE'
             op_stack.push_back(act); // Push 'ELSE' to the stack
         } elif (id == op.END) {
             if (!op_stack.empty()) {
@@ -459,13 +460,16 @@ void compute_crossreference(vector<action> &acts) {
                 cout_debug(<< "popping back\n");
                 op_stack.pop_back(); // Pop the last 'IF', 'ELSE' or 'DO'
                 cout_debug(<< "popping back\n");
-                if ((!op_stack.empty()) and op_stack.back()->id == op.WHILE) {
-                    cout_debug(<< "Setting END value to while's position\n");
-                    int temp = deref(int, op_stack.back()->value);
-                    deref(int, act->value) = temp;
-                    op_stack.pop_back();
-                } else {
-                    act->value = nullptr;
+                if ((!op_stack.empty())) {
+                    if (op_stack.back()->id == op.WHILE) {
+                        cout_debug(<< "Setting END value to while's position\n");
+                        int temp = deref(int, op_stack.back()->value);
+                        deref(int, act->value) = temp;
+                        op_stack.pop_back();
+                    } elif (op_stack.back()->id == op.IF) {
+                        op_stack.pop_back();
+                        act->value = nullptr;
+                    }
                 }
                 cout_debug(<< "done with end specifically\n");
             }
@@ -705,7 +709,8 @@ int inter_main(vector<action> &program, vector<void*> &stack){
 
 
             } case 31: { // OR
-                int cond = pop_value<int>(stack) or pop_value<int>(stack);
+                int x = pop_value<int>(stack);
+                int cond = pop_value<int>(stack) or x;
                 push_to<int>(stack, new_ptr<int>(&cond));
                 break;
             }

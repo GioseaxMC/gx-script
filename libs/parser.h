@@ -87,13 +87,14 @@ string compute_heading(string &file, string file_name){
     int read = 0;
     while (file.find("#") != string::npos) {
         replace_where(file, "\\\n", " ");
-        // printf(".");
+        printf_debug(("."));
         string str = readline(file, read++);
         // cout << "reading line: " << read-1 << " content: " << str << "\n";
         if(str.length()){
             if(str[0] == '#'){
-                replace_where(file, str, "");
+                string str_remover = str + "\n";
                 // cout << "removing string: '" << str << "' from file.\n";
+                replace_where(file, str_remover, "\n");
                 vector<string> tks = parse_tokens(str);
                 if (tks[0] == "#define") {
                     string target = tks[1];

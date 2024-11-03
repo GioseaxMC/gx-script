@@ -2,6 +2,16 @@
 
 0 1 && if
     "true" putsln
+    0 if
+        "true" putsln
+    else
+        "false" putsln
+    end
 else
     "false" putsln
+    1 if
+        "true" putsln
+    else
+        "false" putsln
+    end
 end
