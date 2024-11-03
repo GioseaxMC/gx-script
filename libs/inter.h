@@ -52,6 +52,8 @@ struct {
     const int AT_INT = iota();
     const int SET_INT = iota();
     const int FREE = iota();
+    const int AND = iota();
+    const int OR = iota();
 
     const int lenght = iota();
 } op;
@@ -117,6 +119,10 @@ string get_name(int idx) {
         return "set.int";
     } elif (idx == op.FREE) {
         return "free";
+    } elif (idx == op.AND) {
+        return "and";
+    } elif (idx == op.OR) {
+        return "or";
     }
     else {
         return "-";
@@ -310,6 +316,18 @@ action mfree() {
     return temp;
 }
 
+action _and() {
+    action temp;
+    temp.id = op.AND;
+    return temp;
+}
+
+action _or() {
+    action temp;
+    temp.id = op.OR;
+    return temp;
+}
+
 template<typename T>
 T pop_value(vector<void*> &stack) {
     if (stack.size()) {
@@ -396,6 +414,10 @@ void parse_program(vector<string> tokens, vector<action> &temp){
             temp.push_back(setint());
         } elif (str == "free") {
             temp.push_back(mfree());
+        } elif (str == "&&") {
+            temp.push_back(_and());
+        } elif (str == "||") {
+            temp.push_back(_or());
         }
         else {
             printf("unknown instruction: %s\n", str.c_str());
@@ -658,13 +680,13 @@ int inter_main(vector<action> &program, vector<void*> &stack){
                 break;
 
 
-            } case 27: { // *int
+            } case 27: { // R.int
                 int val = deref(int, deref(void*, stack.back()));
                 push_to<int>(stack, new_ptr<int>(&val));
                 break;
 
 
-            } case 28: { // &int
+            } case 28: { // W.int
                 int val = pop_value<int>(stack);
                 deref(int, deref(void*, (stack.back()))) = val;
                 break;
@@ -673,7 +695,21 @@ int inter_main(vector<action> &program, vector<void*> &stack){
             } case 29: { // FREE
                 void* addr =  pop_value<void*>(stack);
                 free(addr);
-            } 
+                break;
+
+
+            } case 30: { // AND 
+                int cond = pop_value<int>(stack) and pop_value<int>(stack);
+                push_to<int>(stack, new_ptr<int>(&cond));
+                break;
+
+
+            } case 31: { // OR
+                int cond = pop_value<int>(stack) or pop_value<int>(stack);
+                push_to<int>(stack, new_ptr<int>(&cond));
+                break;
+            }
+
 
             default:{
                 break;

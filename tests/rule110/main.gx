@@ -1,0 +1,37 @@
+#include <stdlib.gx>
+
+# ========================\
+# RULE 110 implementation |
+# ========================/
+
+# starting pattern (backwards)
+1 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0
+
+# declaration of int buffers
+33 sizeof(int) * malloc
+
+#load to the first pointer array
+
+# addr -- addr int
+#define get_idx \
+    dup 32 int.move R.int swap drop
+
+# addr int -- addr
+#define set_idx \
+    swap dup 32 int.move rotate W.int drop
+
+# int addr idx -- addr idx
+#define load_to_buff \
+    swap dup rotate int.move \
+    rotate W.int \
+    drop \
+    get_idx
+
+0 while dup 32 < do
+    set_idx
+    get_idx
+    load_to_buff
+    1 +
+end drop
+
+31 int.move R.int dump newl
