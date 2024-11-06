@@ -1,14 +1,14 @@
 #define dup_to_third dup rotate rotate
 #define dup_third_str strdup rotate rotate
 
-#define dup_2 \
-        swap dup_to_third \
+#define dup_2;
+        swap dup_to_third;
         swap dup_to_third
-#define strdup2 \
-        swap dup_third_str \
+#define strdup2;
+        swap dup_third_str;
         swap dup_third_str
 
-#define dup_second \
+#define dup_second;
         swap dup rotate
 
 #define stk stack_dump pause
@@ -18,7 +18,7 @@
 #define print dup dump
 #define space " " puts
  
-#define !! \
+#define !!;
         if 0 else 1 end
 #define <= > !!
 #define >= < !!
@@ -27,11 +27,11 @@
 #define sizeof(char) 1
 #define sizeof(byte) 1
 
-#define int.move \
+#define int.move;
         sizeof(int) * +
-#define char.move \
+#define char.move;
         sizeof(char) * +
-#define byte.move \
+#define byte.move;
         sizeof(byte) * +
 
 #define ++ 1 +

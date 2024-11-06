@@ -83,10 +83,11 @@ vector<string> parse_tokens(string file){
 
 string init_file(string file_name);
 
-string compute_heading(string &file, string file_name){
+string handle_preprocessing(string &file, string file_name){
     int read = 0;
     while (file.find("#") != string::npos) {
         replace_where(file, "\\\n", " ");
+        replace_where(file, ";\n", " ");
         printf_debug(("."));
         string str = readline(file, read++);
         // cout << "reading line: " << read-1 << " content: " << str << "\n";
@@ -133,6 +134,6 @@ string compute_heading(string &file, string file_name){
 
 string init_file(string file_name){
     string file = read_file(file_name);
-    compute_heading(file, file_name);
+    handle_preprocessing(file, file_name);
     return file;
 }
