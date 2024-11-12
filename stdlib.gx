@@ -40,4 +40,9 @@
 #define False 0
 #define True  1
 
+#define for     -1 while dup 
+#define times   -- < do ++
+
+#define say puts
+
 # code here
