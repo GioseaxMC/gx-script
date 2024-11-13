@@ -1,5 +1,5 @@
 #include <stdlib.gx>
 
 for 16 times
-    "this is iteration: " say print newl
+    "this is iteration: " say println
 end

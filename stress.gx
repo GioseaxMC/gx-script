@@ -1,4 +1,5 @@
-512 0 while swap dup rotate rotate swap dup rotate rotate > do
+#include <stdlib.gx>
+
+for 512 times
     "stress test '" puts print "'\n" puts
-    1 +
 end
