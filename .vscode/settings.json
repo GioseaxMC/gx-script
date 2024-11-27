@@ -4,7 +4,8 @@
         "*.gx": "ruby",
         "ostream": "cpp",
         "iostream": "cpp",
-        "numeric": "cpp"
+        "numeric": "cpp",
+        "*.tcc": "cpp"
     },
     "javascript.validate.enable": false,
     "typescript.validate.enable": false,

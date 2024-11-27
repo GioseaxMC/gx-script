@@ -94,7 +94,7 @@ string join(string chr, vector<string> vec, int start = 0){
 string replace_where(string &text, string str_r, string str_n){
     // int used_pos = 0;
     while (1) {
-        int pos = text.find(str_r, 0);
+        int pos = text.find(str_r);
         if (pos != string::npos) {
             // cout << "new: " << str_n << " old: " << str_r << endl;
             text.replace(pos, str_r.length(), str_n);
@@ -125,4 +125,22 @@ bool is_numeric(string str) {
         }
     }
     return 1;
+}
+
+vector<string> split(string &file, char chr = ' ') {
+    vector<string> temp;
+    string temp_str;
+    for (int i=0; i<file.length(); ++i) {
+        if(file[i] == chr) {
+            temp.push_back(temp_str);
+            temp_str.clear();
+        } else {
+            temp_str += file[i];
+        }
+    }
+    if (temp_str.length()) {
+            temp.push_back(temp_str);
+            temp_str.clear();
+    }
+    return temp;
 }

@@ -3,8 +3,8 @@
 1 6
 dup_2 <= if
     swap
-    dump " minor-equal " puts dump newl
+    dump " <= " puts dump newl
 else
     swap
-    dump " greater-than " puts dump newl
+    dump " <= " puts dump newl
 end

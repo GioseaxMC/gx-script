@@ -1,4 +1,5 @@
 # include "paths.h"
+# include "dicts.h"
 
 # define deref(type, ptr) *((type*)(ptr))
 # define elif else if
@@ -20,6 +21,8 @@ void* new_ptr(void* ptr){
     memcpy(n_ptr, ptr, size);
     return n_ptr;
 }
+
+Hash<int> references;
 
 struct {
     const int PUSH = iota(1);
@@ -54,9 +57,15 @@ struct {
     const int FREE = iota();
     const int AND = iota();
     const int OR = iota();
+    const int PROC = iota();
+    const int REFERENCE = iota();
+    const int RET = iota();
+    const int PROC_NAME = iota();
 
     const int lenght = iota();
 } op;
+
+
 
 string get_name(int idx) {
     if (idx == op.PUSH) {
@@ -123,6 +132,14 @@ string get_name(int idx) {
         return "and";
     } elif (idx == op.OR) {
         return "or";
+    } elif (idx == op.PROC) {
+        return "proc";
+    } elif (idx == op.RET) {
+        return "return";
+    } elif (idx == op.REFERENCE) {
+        return "reference";
+    } elif (idx == op.PROC_NAME) {
+        return "proc-name";
     }
     else {
         return "-";
@@ -328,6 +345,35 @@ action _or() {
     return temp;
 }
 
+action proc() {
+    action temp;
+    temp.id = op.PROC;
+    return temp;
+}
+
+action ref(string &name) { // TODO: figure out if must be removed
+    action temp;
+    string* str_ptr = new string(name);
+    temp.id = op.REFERENCE;
+    temp.value = str_ptr;
+    return temp;
+}
+
+action proc_name(string &name) {
+    action temp;
+    string* str_ptr = new string(name);
+    references.add(name, -1);
+    temp.value = str_ptr;
+    temp.id = op.PROC_NAME;
+    return temp;
+}
+
+action ret() {
+    action temp;
+    temp.id = op.RET;
+    return temp;
+}
+
 template<typename T>
 T pop_value(vector<void*> &stack) {
     if (stack.size()) {
@@ -420,9 +466,20 @@ void parse_program(vector<string> tokens, vector<action> &temp){
             temp.push_back(_and());
         } elif (str == "||") {
             temp.push_back(_or());
+        } elif (str == "proc") {
+            temp.push_back(proc());
+            temp.push_back(proc_name(tokens[++i]));
+            cout_debug(<< "declared proc: " << tokens[i] << endl);
+        } elif (str == "return") {
+            temp.push_back(ret());
         }
         else {
-            printf("unknown instruction '%s' at position '%i'\n", str.c_str(), i);
+            if (references.contains(str)) {
+                temp.push_back(ref(str));
+                cout << "referenced: " << str << endl;
+            } else {
+                printf("unknown instruction '%s' at position '%i'\n", str.c_str(), i);
+            }   
         }
     }
 }
@@ -435,8 +492,15 @@ void stack_dump(vector<void*> &stack) {
     cout << "\n";
 }
 
+void actions_dump(vector<action> &acts) {
+    for(action act : acts) {
+        cout << "act type: " << get_name(act.id) << endl;
+    }
+}
+
 void compute_crossreference(vector<action> &acts) {
     vector<action*> op_stack; // Moved this outside the loop
+    // actions_dump(acts);
     int i = 0;
     while (i < acts.size()) {
         action* act = &acts[i];
@@ -479,6 +543,14 @@ void compute_crossreference(vector<action> &acts) {
             deref(int, act->value) = i;
             op_stack.push_back(act); // Push 'WHILE' to the stack
         }
+          elif (id == op.PROC) {
+            op_stack.push_back(act);
+            cout_debug(<< "setting up procedure name for: " << deref(string, acts[i].value) << endl);
+            references[deref(string, acts[i].value)] = i+1;
+        } elif (id == op.RET) {
+            deref(int, op_stack.back()->value) = i; // set the PROC pointer to after the end so we skip the funzion at execution.
+            op_stack.pop_back();
+        }
         else {
             printf_debug((" - instruction with name '%s' is not crossreference-able.\n", get_name(id).c_str()));
         }
@@ -494,6 +566,8 @@ void compute_crossreference(vector<action> &acts) {
     }
     cout_debug(<< "got to crossreferecing end\n");
 }
+
+vector<int> address_stack;
 
 #define stackn(x) stack[stack.size()+(x)]
 int inter_main(vector<action> &program, vector<void*> &stack){
@@ -713,9 +787,29 @@ int inter_main(vector<action> &program, vector<void*> &stack){
                 int cond = pop_value<int>(stack) or x;
                 push_to<int>(stack, new_ptr<int>(&cond));
                 break;
+
+
+            } case 32: { // PROC
+                i = deref(int, act.value);
+                cout_debug(<< "skipping after the return located at: " << i << endl);
+                break;
+
+
+            } case 33: { // reference
+                address_stack.push_back(i);
+                i = references[deref(string, act.value)];
+                cout_debug(<< "referencing to: " << deref(string, act.value) << ", setting IP to: " << i << endl);
+                break;
+
+
+            } case 34: { // RETURN
+                i = address_stack.back();
+                cout_debug(<< "resetting IP to: " << i << endl);
+                address_stack.pop_back();
+                break;
+            
+            
             }
-
-
             default:{
                 break;
                 
@@ -725,7 +819,8 @@ int inter_main(vector<action> &program, vector<void*> &stack){
         # ifdef DEBUG
             stack_dump(stack);
             system("pause");
+            cout << "instruction idx: " << i << " with name " << get_name(act.id) << "\n";
         # endif
-        cout_debug(<< "instruction idx: " << i << "\n";)
     }
+    // cout << references["swap_buffers"] << endl;
 }

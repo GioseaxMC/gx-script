@@ -1,0 +1,11 @@
+#include <stdlib.gx>
+
+proc main
+    1 dump
+return
+
+proc do_main
+    main main
+return
+
+do_main

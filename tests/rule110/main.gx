@@ -16,59 +16,65 @@ BUFF_SIZE ++ sizeof(int) * malloc
 #load to the first pointer array
 
 # addr idx -- addr (with idx written in position 64)
-#define W.idx;
-    swap dup BUFF_SIZE int.move rotate W.int drop
+proc W.idx;
+    swap dup BUFF_SIZE int.move rotate W.int drop return
 
 # addr -- addr idx
-#define R.idx;
-    dup BUFF_SIZE int.move R.int swap drop
+proc R.idx;
+    dup BUFF_SIZE int.move R.int swap drop return
 
-#define U.idx;
+proc U.idx;
     W.idx;
     R.idx
+return
 
 # int addr idx -- addr idx
 # i ad id - i ad ad id - i ad ad+ - ad ad+ i - ad ad+ - ad - ad id
-#define load_to_buff;
+proc load_to_buff;
     dup_second int.move;
     rotate W.int;
     drop;
     R.idx
+return
 
-#define prepare_buffer;
+proc prepare_buffer;
     0 while dup HALF_SIZE < do;
         U.idx;
         load_to_buff;
         ++;
     end drop;
+return
 
 # idx -- idx bool
-#define out_of_bounds;
-    dup HALF_SIZE -- > swap dup 0 < rotate ||
+proc out_of_bounds;
+    dup HALF_SIZE -- > swap dup 0 < rotate || return
 
 # addr idx -- addr idx int
-#define read_buff;
+proc read_buff;
     swap dup_to_third swap;
     dup_to_third int.move;
     R.int;
     swap drop
+return
 
 # addr idx -- addr idx int
-#define read_bit_at;
+proc read_bit_at;
     out_of_bounds if;
         0;
     else;
         read_buff end
+return
 
 # int int int id -- id int
-#define to_dec;
+proc to_dec;
     swap rotate;
     2 * +;
     rotate;
     4 * + 
+return
 
 # int -- int
-#define eval_bit;
+proc eval_bit;
     dup 0 = if;
         0;
     else;
@@ -102,9 +108,10 @@ BUFF_SIZE ++ sizeof(int) * malloc
             end;
         end;
     end swap drop
+return
 
 # addr idx -- int int int addr idx
-#define read_three;
+proc read_three;
     dup_second;
     --;
     read_bit_at rotate rotate;
@@ -113,11 +120,12 @@ BUFF_SIZE ++ sizeof(int) * malloc
     ++;
     read_bit_at rotate rotate;
     --
+return
 
 # addr idx -- addr idx
 # addr idx - addr idx addr idx - ad id ad+ - ad id ad+ int -- ad int id ad+ -- ad int id ad+32
 # ad int id ad+32 int32 -- ad int id int32 ad+ - ad int id ad+ int32 - ad int id ad+ -- ad int id ad+32 - ad id ad+32 int - ad id ad+32 - ad id
-#define swap_by_id;
+proc swap_by_id;
     dup_2 int.move R.int;
     rotate rotate;
     HALF_SIZE int.move R.int;
@@ -125,28 +133,31 @@ BUFF_SIZE ++ sizeof(int) * malloc
     swap W.int;
     HALF_SIZE int.move;
     rotate W.int drop;
+return
 
 # addr -- addr
-#define swap_buffers;
+proc swap_buffers;
     0 while dup HALF_SIZE < do;
         swap_by_id;
         ++;
     end drop
+return
 
 # addr -- addr
 # ad id - ad id ad id - ad id ad+ - ad id ad+ int - 
 # ad id ad+ int - ad ad+ int id - print - ad ad+ id int - 
-#define buffer_dump;
+proc buffer_dump;
     0 while dup BUFF_SIZE < do;
         dup_2;
         int.move;
         R.int rotate print swap "\t" puts dump swap drop newl;
         ++;
     end drop
+return
 
 # ad -- ad
 # ad id - ad id ad id - ad id ad+ - ad id ad+ int - ad id ad+ - ad id - ad id++
-#define dump_32;
+proc dump_32;
     0 while dup HALF_SIZE < do;
         dup_2;
         int.move;
@@ -155,10 +166,11 @@ BUFF_SIZE ++ sizeof(int) * malloc
         drop;
         ++;
     end drop newl
+return
 
 # addr idx -- addr idx
 # ad id - int int int ad id - 
-#define read_and_write;
+proc read_and_write;
     read_three;
     W.idx;
     to_dec eval_bit;
@@ -166,20 +178,22 @@ BUFF_SIZE ++ sizeof(int) * malloc
     HALF_SIZE + int.move;
     swap W.int;
     drop R.idx
+return
 
+proc main
+    prepare_buffer
 
-# main:
-
-prepare_buffer
-
-0 while dup ITERATIONS < do
-    swap
-    0 while dup HALF_SIZE < do
-        read_and_write
+    0 while dup ITERATIONS < do
+        swap
+        0 while dup HALF_SIZE < do
+            read_and_write
+            ++
+        end drop
+        dump_32
+        swap_buffers
+        swap
         ++
-    end drop
-    dump_32
-    swap_buffers
-    swap
-    ++
-end
+    end
+return
+
+main

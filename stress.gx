@@ -1,5 +1,3 @@
 #include <stdlib.gx>
 
-for 512 times
-    "stress test '" puts print "'\n" puts
-end
+1 not. println

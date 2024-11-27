@@ -1,6 +1,6 @@
 # include "inter.h"
 
-vector<string> parse_tokens(string file){
+vector<string> parse_tokens(string &file, vector<vector<int>> positions){
     vector<string> tokens;
     string token;
     for(int i=0; i<file.length(); i++) {
@@ -81,59 +81,93 @@ vector<string> parse_tokens(string file){
     return tokens;
 }
 
-string init_file(string file_name);
+int find(string &haystack, string needle, int &__end_position) {
+    __end_position = haystack.find(needle);
+    return __end_position;
+}
 
-string handle_preprocessing(string &file, string file_name){
-    int read = 0;
-    while (file.find("#") != string::npos) {
-        replace_where(file, "\\\n", " ");
-        replace_where(file, ";\n", " ");
-        printf_debug(("."));
-        string str = readline(file, read++);
-        // cout << "reading line: " << read-1 << " content: " << str << "\n";
-        if(str.length()){
-            if(str[0] == '#'){
-                string str_remover = str + "\n";
-                // cout << "removing string: '" << str << "' from file.\n";
-                replace_where(file, str_remover, "\n");
-                vector<string> tks = parse_tokens(str);
-                if (tks[0] == "#define") {
-                    string target = tks[1];
-                    string substr = join(" ", tks, 2);
-                    replace_where(file, target, substr);
-                    cout_debug(<< "DEFINE: reading define at " << read << ":\n\t'" << str << "'\n\treplacing '" << target << "' with '" << substr << "'\n");
-                    // cout << "\tfile after define\n" << file << "\n";
-                } elif (tks[0] == "#include") {
-                    path p2 = file_name;
-                    int represented = (int)represents_string(tks[1]) - (int)represents_header(tks[1]);
-                    if (represented) {
-                        string target = derep_str(tks[1]);
-                        path ptarget = target;
-                        cout_debug(<< "INCLUDE: including file at '" << p2 << "'\n");
-                        if (represented == 1) {
-                            p2 = p2.dir_name();
-                            p2 += ptarget;
-                        } elif (represented == -1) {
-                            p2 = ptarget;
-                        }
-                        // cout_debug<< "file after include\n" << file << "\n";
-                        file = read_file(p2()) + "\n" + file;
-                        read = 0;
-                    }
-                    else {
-                        cout << "ERROR: Inclusion failed in:\n\t - " << p2 << ":" << read << ":" << 10 << "\n";
-                        throw -1;
-                    }
+string get_line(string &file, int __start_pos) {
+    string temp;
+    for(int i=__start_pos; i<file.length(); ++i) {
+        temp += file[i];
+        if (file[i] == '\n') {
+            break;
+        }
+    }
+    return temp;
+}
+
+void handle_inclusion(string &file, string file_name) {
+    int str_position;
+    while (find(file, "#include", str_position) != string::npos) {
+        cout_debug(<< ".");
+        path p2 = file_name;
+        string line = get_line(file, str_position);
+        cout_debug(<< str_position << endl);
+        vector<vector<int>> _;
+        vector<string> tks = parse_tokens(line, _);
+        _.clear();
+        int header_type = (int)represents_string(tks[1]) - (int)represents_header(tks[1]); // 1 if local else -1
+        if (header_type) {
+            string target_header = derep_str(tks[1]);
+            path header_path = target_header;
+            cout_debug(<< "INCLUDE: including file at '" << p2 << "'\n");
+            if (header_type == 1) {
+                p2 = p2.dir_name();
+                p2 += header_path;
+            } elif (header_type == -1) {
+                p2 = header_path;
+            }
+            file.erase(str_position, line.length());
+            file.insert(str_position, read_file(p2())+"\n");
+        } else {
+            cout << "ERROR: Inclusion failed in:\n\t - " << p2 << ":" << /* line name << */ ":" << 10 << "\n";
+            throw -1;
+        }
+    }
+}
+
+void handle_defines(string &file, string file_name) {
+    int define_pos;
+    while(find(file, "#define", define_pos) != string::npos){
+        string line = get_line(file, define_pos);
+        replace_where(file, line, "");
+        vector<vector<int>> _;
+        vector<string> tks = parse_tokens(line, _);
+        _.clear();
+        string target = tks[1];
+        string substr = join(" ", tks, 2);
+        replace_where(file, target+"\n", substr+"\n");
+        replace_where(file, target+" ", substr+" ");
+    }
+}
+
+void handle_semicolons(string &file) {
+    replace_where(file, "\\\n", " ");
+    replace_where(file, ";\n", " ");
+}
+
+void remove_comments(string &file) {
+    for(int i=0; i<file.length(); ++i) {
+        if (file[i] == '#') {
+            while(file.length() - i) {
+                file.erase(i, 1);
+                if (file[i] != '\n') {
+                } else {
+                    break;
                 }
             }
         }
-        // cout << file << "\n";
-        // system("pause");
     }
 }
 
 string init_file(string file_name){
     string file = read_file(file_name);
-    handle_preprocessing(file, file_name);
+    handle_inclusion(file, file_name);
+    handle_semicolons(file);
+    handle_defines(file, file_name);
+    remove_comments(file);
+    replace_where(file, "\n\n", "\n");
+    cout_debug(<< file << endl);
     return file;
 }

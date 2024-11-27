@@ -12,7 +12,8 @@ int main(int argc, char** argv) {
         # ifdef DEBUG
             cout << "\n--" << file << "\n--\n";
         # endif
-        vector<string> tokens = parse_tokens(file);
+        vector<vector<int>> t_positions;
+        vector<string> tokens = parse_tokens(file, t_positions);
         vector<action> program;
         parse_program(tokens, program);
         compute_crossreference(program);

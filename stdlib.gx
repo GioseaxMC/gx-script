@@ -1,48 +1,59 @@
-#define dup_to_third dup rotate rotate
-#define dup_third_str strdup rotate rotate
+proc dup_to_third dup rotate rotate return
+proc dup_third_str strdup rotate rotate return
 
-#define dup_2;
-        swap dup_to_third;
-        swap dup_to_third
-#define strdup2;
-        swap dup_third_str;
-        swap dup_third_str
+proc dup_2;
+    swap dup_to_third;
+    swap dup_to_third
+return
 
-#define dup_second;
+proc strdup2;
+    swap dup_third_str;
+    swap dup_third_str
+return
+
+proc dup_second;
         swap dup rotate
+return
 
-#define stk stack_dump pause
-#define drop2 drop drop
-#define putsln puts newl
-#define println dup dump newl
-#define print dup dump
-#define space " " puts
+proc stk stack_dump pause return
+proc drop2 drop drop return
+proc putsln puts newl return
+proc println dup dump newl return
+proc print dup dump return
+proc space " " puts return
  
-#define !!;
-        if 0 else 1 end
-#define <= > !!
-#define >= < !!
+proc not;
+    if 0 else 1 end
+return
 
-#define sizeof(int) 4
-#define sizeof(char) 1
-#define sizeof(byte) 1
+proc <= > not return
+proc >= < not return
 
-#define int.move;
-        sizeof(int) * +
-#define char.move;
-        sizeof(char) * +
-#define byte.move;
-        sizeof(byte) * +
+proc sizeof(int) 4 return
+proc sizeof(char) 1 return
+proc sizeof(byte) 1 return
 
-#define ++ 1 +
-#define -- 1 -
+proc int.move
+    sizeof(int) * +
+return
 
-#define False 0
-#define True  1
+proc char.move;
+    sizeof(char) * +
+return
 
-#define for     -1 while dup 
+proc byte.move;
+    sizeof(byte) * +
+return
+
+proc ++ 1 + return
+proc -- 1 - return
+
+proc False 0 return
+proc True  1 return
+
+#define for     -1 while dup
 #define times   -- < do ++
 
-#define say puts
+proc say puts return
 
 # code here

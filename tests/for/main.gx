@@ -1,5 +1,9 @@
 #include <stdlib.gx>
 
-for 16 times
-    "this is iteration: " say println
-end
+proc main
+    for 16 times
+        "this is iteration: " say println
+    end
+return
+
+main
