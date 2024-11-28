@@ -1,0 +1,10 @@
+#include <stdlib.gx>
+
+8 malloc
+
+10 W.int
+R.int dump
+stk
+
+1 int.move
+stk

@@ -34,15 +34,15 @@ proc sizeof(char) 1 return
 proc sizeof(byte) 1 return
 
 proc int.move
-    sizeof(int) * +
+    sizeof(int) * ptr+
 return
 
-proc char.move;
-    sizeof(char) * +
+proc char.move
+    sizeof(char) * ptr+
 return
 
-proc byte.move;
-    sizeof(byte) * +
+proc byte.move
+    sizeof(byte) * ptr+
 return
 
 proc ++ 1 + return

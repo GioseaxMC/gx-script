@@ -1,17 +1,15 @@
 #include <stdlib.gx>
 
-0 1 && if
-    "true" putsln
+for 3 times
     0 if
-        "true" putsln
-    else
-        "false" putsln
-    end
-else
-    "false" putsln
-    1 if
-        "true" putsln
-    else
-        "false" putsln
+        "case 1\n" puts
+    else 0 if*
+        "case 2\n" puts
+    else 1 if*
+        0 if
+            "case 3 1\n" puts
+        else
+            "case 3 0\n" puts
+        end
     end
 end

@@ -4,6 +4,8 @@
 # define deref(type, ptr) *((type*)(ptr))
 # define elif else if
 
+# define int64 uint64_t
+
 # define DEBUG0
 
 #ifdef DEBUG
@@ -61,6 +63,8 @@ struct {
     const int REFERENCE = iota();
     const int RET = iota();
     const int PROC_NAME = iota();
+    const int PTR_SUM = iota();
+    const int ELIF = iota();
 
     const int lenght = iota();
 } op;
@@ -140,6 +144,10 @@ string get_name(int idx) {
         return "reference";
     } elif (idx == op.PROC_NAME) {
         return "proc-name";
+    } elif (idx == op.PTR_SUM) {
+        return "ptr+";
+    } elif (idx == op.ELIF) {
+        return "if*";
     }
     else {
         return "-";
@@ -374,6 +382,18 @@ action ret() {
     return temp;
 }
 
+action ptr_sum() {
+    action temp;
+    temp.id = op.PTR_SUM;
+    return temp;
+}
+
+action _elif() {
+    action temp;
+    temp.id = op.ELIF;
+    return temp;
+}
+
 template<typename T>
 T pop_value(vector<void*> &stack) {
     if (stack.size()) {
@@ -472,11 +492,15 @@ void parse_program(vector<string> tokens, vector<action> &temp){
             cout_debug(<< "declared proc: " << tokens[i] << endl);
         } elif (str == "return") {
             temp.push_back(ret());
+        } elif (str == "ptr+") {
+            temp.push_back(ptr_sum());
+        } elif (str == "if*") {
+            temp.push_back(_elif());
         }
         else {
             if (references.contains(str)) {
                 temp.push_back(ref(str));
-                cout << "referenced: " << str << endl;
+                cout_debug(<< "referenced: " << str << endl);
             } else {
                 printf("unknown instruction '%s' at position '%i'\n", str.c_str(), i);
             }   
@@ -507,37 +531,53 @@ void compute_crossreference(vector<action> &acts) {
         int id = act->id;
         i++;
         
-        printf_debug(("crossreferencing instruction '%s'\n", get_name(id).c_str()));
+        // printf_debug(("crossreferencing instruction '%s'\n", get_name(id).c_str()));
         
-        if (id == op.IF) {
-            op_stack.push_back(act); // Push 'IF' to the stack
-        } elif (id == op.ELSE) {
+        if (id == op.IF or id == op.ELIF) { // IF
+            op_stack.push_back(act);
+
+        } elif (id == op.ELSE) { // ELSE
             if (!op_stack.empty()) {
-                deref(int, op_stack.back()->value) = i;
+                int type = (op_stack.back()->id == op.IF) - (op_stack.back()->id == op.ELIF);
+                if (type) {
+                    deref(int, op_stack.back()->value) = i;
+                    cout_debug(<< "setting else-1 which is: " << get_name(op_stack.back()->id) << endl);
+                    op_stack.pop_back();
+                    if (type == -1 and !op_stack.empty()) {
+                        if (op_stack.back()->id == op.ELSE) {
+                            deref(int, op_stack.back()->value) = i-1;
+                            cout_debug(<< "setting else-2 which is: " << get_name(op_stack.back()->id) << endl);
+                            op_stack.pop_back();
+                        }
+                    }
+                }
+                
             }
-            op_stack.push_back(act); // Push 'ELSE' to the stack
-        } elif (id == op.END) {
+            op_stack.push_back(act);
+        
+        } elif (id == op.END) { // END
             if (!op_stack.empty()) {
-                cout_debug(<< "set last's value to " << i << "\n");
-                cout_debug(<< "stack size: " << op_stack.size() << "\n");
                 deref(int, op_stack.back()->value) = i;
-                cout_debug(<< "popping back\n");
-                op_stack.pop_back(); // Pop the last 'IF', 'ELSE' or 'DO'
-                cout_debug(<< "popping back\n");
+                cout_debug(<< "end cleared previous which was: " << get_name(op_stack.back()->id) << endl);
+                op_stack.pop_back();
                 if ((!op_stack.empty())) {
                     if (op_stack.back()->id == op.WHILE) {
-                        cout_debug(<< "Setting END value to while's position\n");
                         int temp = deref(int, op_stack.back()->value);
                         deref(int, act->value) = temp;
+                        cout_debug(<< "END: setting self to reference WHILE\n");
                         op_stack.pop_back();
-                    } elif (op_stack.back()->id == op.IF) {
+                    } elif (op_stack.back()->id == op.ELSE) {
+                        deref(int, op_stack.back()->value) = i;
+                        cout_debug(<< "END: setting last (else) to reference NEXT\n");
                         op_stack.pop_back();
+                        act->value = nullptr;
+                    } else {
                         act->value = nullptr;
                     }
                 }
-                cout_debug(<< "done with end specifically\n");
             }
-        } elif (id == op.DO) {
+        
+        } elif (id == op.DO) { // DO
             op_stack.push_back(act); // Push 'DO' to the stack
         } elif (id == op.WHILE) {
             deref(int, act->value) = i;
@@ -552,7 +592,7 @@ void compute_crossreference(vector<action> &acts) {
             op_stack.pop_back();
         }
         else {
-            printf_debug((" - instruction with name '%s' is not crossreference-able.\n", get_name(id).c_str()));
+            // printf_debug((" - instruction with name '%s' is not crossreference-able.\n", get_name(id).c_str()));
         }
         printf_debug((" -- Done crossreferencing '%s'.\n", get_name(id).c_str()));
     }
@@ -597,15 +637,15 @@ int inter_main(vector<action> &program, vector<void*> &stack){
                 break;
                 
 
-            } case 3: { // DUP                
-                stack.push_back(new_ptr<int>(stack.back()));
+            } case 3: { // DUP 
+                stack.push_back(new_ptr<void*>(stack.back()));
                 break;
                 
 
             } case 4: { // SUB
                 int x = pop_value<int>(stack);
                 int y = pop_value<int>(stack);
-                int temp = y-x;
+                int temp = y - x;
                 push_to<int>(stack, new_ptr<int>(&temp));
                 break;
                 
@@ -798,7 +838,7 @@ int inter_main(vector<action> &program, vector<void*> &stack){
             } case 33: { // reference
                 address_stack.push_back(i);
                 i = references[deref(string, act.value)];
-                cout_debug(<< "referencing to: " << deref(string, act.value) << ", setting IP to: " << i << endl);
+                // cout << "referencing to: " << deref(string, act.value) << ", setting IP to: " << i << endl;
                 break;
 
 
@@ -809,6 +849,29 @@ int inter_main(vector<action> &program, vector<void*> &stack){
                 break;
             
             
+            } case 35: { // dummy for proc name
+                break;
+            } case 36: { // PTR SUM
+                // cout << "popped\n";
+                int64 x = pop_value<int64>(stack);
+                int64 y = pop_value<int64>(stack);
+                int64 temp = x + y;
+                // cout << "summed\n";
+                push_to<int64>(stack, new_ptr<int64>(&temp));
+                // cout << "pushed\n";
+                break;
+            
+
+            } case 37: { // ELIF
+                bool cond = !(bool)pop_value<int>(stack);
+                cout_debug(<< "condition is: " << cond << "\n");
+                if (cond) {
+                    i = deref(int, act.value);
+                    cout_debug(<< "IF: setting 'i' to: " << i << "\n");
+                }
+                break;
+                
+
             }
             default:{
                 break;

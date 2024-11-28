@@ -5,23 +5,24 @@
 # ========================/
 
 #define BUFF_SIZE 128
-#define HALF_SIZE 64
-#define ITERATIONS 64
+#define HALF_SIZE BUFF_SIZE 2 /
+#define ITERATIONS BUFF_SIZE 2 /
 
 # starting pattern (backwards)
-1 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0
-
+1 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0        0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0    0 0 0 0  0 0 0 0
 # declaration of int buffers
 BUFF_SIZE ++ sizeof(int) * malloc
 #load to the first pointer array
 
 # addr idx -- addr (with idx written in position 64)
 proc W.idx;
-    swap dup BUFF_SIZE int.move rotate W.int drop return
+    swap dup BUFF_SIZE int.move rotate W.int drop
+return
 
 # addr -- addr idx
 proc R.idx;
-    dup BUFF_SIZE int.move R.int swap drop return
+    dup BUFF_SIZE int.move R.int swap drop
+return
 
 proc U.idx;
     W.idx;
@@ -38,16 +39,17 @@ proc load_to_buff;
 return
 
 proc prepare_buffer;
-    0 while dup HALF_SIZE < do;
-        U.idx;
-        load_to_buff;
-        ++;
+    0 while dup HALF_SIZE < do
+        U.idx
+        load_to_buff
+        ++
     end drop;
 return
 
 # idx -- idx bool
 proc out_of_bounds;
-    dup HALF_SIZE -- > swap dup 0 < rotate || return
+    dup HALF_SIZE -- > swap dup 0 < rotate ||
+return
 
 # addr idx -- addr idx int
 proc read_buff;
@@ -75,38 +77,24 @@ return
 
 # int -- int
 proc eval_bit;
-    dup 0 = if;
-        0;
-    else;
-        dup 1 = if;
-            1;
-        else;
-            dup 2 = if;
-                1;
-            else;
-                dup 3 = if;
-                    1;
-                else;
-                    dup 4 = if;
-                        0;
-                    else;
-                        dup 5 = if;
-                            1;
-                        else;
-                            dup 6 = if;
-                                1;
-                            else;
-                                dup 7 = if;
-                                    0;
-                                else;
-                                    0;
-                                end;
-                            end;
-                        end;
-                    end;
-                end;
-            end;
-        end;
+    dup 0 = if
+        0
+    else dup 1 = if*
+        1
+    else dup 2 = if*
+            1
+    else dup 3 = if*
+            1
+    else dup 4 = if*
+            0
+    else dup 5 = if*
+            1
+    else dup 6 = if*
+            1
+    else dup 7 = if*
+            0
+    else
+        0
     end swap drop
 return
 
