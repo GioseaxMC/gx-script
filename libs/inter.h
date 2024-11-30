@@ -27,6 +27,7 @@ void* new_ptr(void* ptr){
 void* new_ptr(string str_ptr) {
     string* n_str = static_cast<string*>(malloc(sizeof(string)));
     if (!n_str) {
+        cout << "FATAL ERROR: buy more ram... LITERALLY\n";
         throw bad_alloc();
     }
 
