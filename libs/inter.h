@@ -24,6 +24,17 @@ void* new_ptr(void* ptr){
     return n_ptr;
 }
 
+void* new_ptr(string str_ptr) {
+    string* n_str = static_cast<string*>(malloc(sizeof(string)));
+    if (!n_str) {
+        throw bad_alloc();
+    }
+
+    new (n_str) string(str_ptr);
+
+    return static_cast<void*>(n_str);
+}
+
 Hash<int> references;
 
 struct {
@@ -65,10 +76,13 @@ struct {
     const int PROC_NAME = iota();
     const int PTR_SUM = iota();
     const int ELIF = iota();
+    const int STOI = iota();
+    const int INPUT = iota();
+    const int SYSTEM = iota();
+    const int STR_SUM = iota();
 
     const int lenght = iota();
 } op;
-
 
 
 string get_name(int idx) {
@@ -148,6 +162,14 @@ string get_name(int idx) {
         return "ptr+";
     } elif (idx == op.ELIF) {
         return "if*";
+    } elif (idx == op.STOI) {
+        return "stoi";
+    } elif (idx == op.INPUT) {
+        return "input";
+    } elif (idx == op.SYSTEM) {
+        return "system";
+    } elif (idx == op.STR_SUM) {
+        return "str-sum";
     }
     else {
         return "-";
@@ -156,7 +178,7 @@ string get_name(int idx) {
 
 struct action{
     int id;
-    void* value = malloc(4); // alloc 4 bytes for pointers
+    void* value = malloc(sizeof(void*)); // alloc s(void*) bytes for pointers
 };
 
 template<typename T>
@@ -394,6 +416,30 @@ action _elif() {
     return temp;
 }
 
+action _stoi() {
+    action temp;
+    temp.id = op.STOI;
+    return temp;
+}
+
+action input() {
+    action temp;
+    temp.id = op.INPUT;
+    return temp;
+}
+
+action _system() {
+    action temp;
+    temp.id = op.SYSTEM;
+    return temp;
+}
+
+action str_sum() {
+    action temp;
+    temp.id = op.STR_SUM;
+    return temp;
+}
+
 template<typename T>
 T pop_value(vector<void*> &stack) {
     if (stack.size()) {
@@ -461,9 +507,10 @@ void parse_program(vector<string> tokens, vector<action> &temp){
         } elif (str == "newl") {
             temp.push_back(newline());
         } elif (represents_string(str)) {
-            string* str_ptr = new string(derep_str(str));
+            string strn = derep_str(str);
             action act = str_literal();
-            act.value = str_ptr;
+            free(act.value);
+            act.value = new_ptr(strn);
             cout_debug(<< "pushed: '" << deref(string, act.value) << "'\n");
             temp.push_back(act);
         } elif (str == "puts") {
@@ -496,6 +543,14 @@ void parse_program(vector<string> tokens, vector<action> &temp){
             temp.push_back(ptr_sum());
         } elif (str == "if*") {
             temp.push_back(_elif());
+        } elif (str == "stoi") {
+            temp.push_back(_stoi());
+        } elif (str == "input") {
+            temp.push_back(input());
+        } elif (str == "system") {
+            temp.push_back(_system());
+        } elif (str == "strsum") {
+            temp.push_back(str_sum());
         }
         else {
             if (references.contains(str)) {
@@ -764,13 +819,15 @@ int inter_main(vector<action> &program, vector<void*> &stack){
                 
 
             } case 21: { // STRING-LITERAL
-                push_to<string>(stack, new_ptr<string>(act.value));
+                string str = deref(string, act.value);
+                push_to<string>(stack, new_ptr(str));
                 break;
                 
 
             } case 22: { // PUTS
                 cout_debug(<< "trying to print\n");
-                cout << pop_value<string>(stack);
+                string str = pop_value<string>(stack);
+                cout << str;
                 break;
                 
 
@@ -783,7 +840,7 @@ int inter_main(vector<action> &program, vector<void*> &stack){
             
             
             } case 24: { // STR-DUP
-                stack.push_back(new_ptr<string>(stack.back()));
+                stack.push_back(new_ptr(deref(string, stack.back())));
                 break;
 
 
@@ -872,6 +929,34 @@ int inter_main(vector<action> &program, vector<void*> &stack){
                 break;
                 
 
+            } case 38: { // STOI
+                string str = pop_value<string>(stack);
+                int temp = stoi(str);
+                push_to<int>(stack, new_ptr<int>(&temp));
+                break;
+
+
+            } case 39: { // INPUT
+                string str;
+                getline(cin, str);
+                // cout << "received: " << str << endl;
+                push_to<string>(stack, new_ptr(str));
+                break;
+
+
+            } case 40: { // SYSTEM
+                system(pop_value<string>(stack).c_str());
+                break;
+
+
+            } case 41: { // STRSUM
+                string s1 = pop_value<string>(stack);
+                string s2 = pop_value<string>(stack);
+                s2 += s1;
+                push_to<string>(stack, new_ptr(s2));
+                break;
+
+
             }
             default:{
                 break;
@@ -881,8 +966,8 @@ int inter_main(vector<action> &program, vector<void*> &stack){
         }
         # ifdef DEBUG
             stack_dump(stack);
-            system("pause");
-            cout << "instruction idx: " << i << " with name " << get_name(act.id) << "\n";
+            // system("pause");
+            cout << "instruction idx: " << i-1 << " with name " << get_name(act.id) << "\n";
         # endif
     }
     // cout << references["swap_buffers"] << endl;

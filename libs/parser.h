@@ -167,7 +167,6 @@ string init_file(string file_name){
     handle_semicolons(file);
     handle_defines(file, file_name);
     remove_comments(file);
-    replace_where(file, "\n\n", "\n");
     cout_debug(<< file << endl);
     return file;
 }

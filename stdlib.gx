@@ -17,6 +17,7 @@ return
 
 proc stk stack_dump pause return
 proc drop2 drop drop return
+proc stoi2 stoi swap stoi swap return
 proc putsln puts newl return
 proc println dup dump newl return
 proc print dup dump return
@@ -48,12 +49,25 @@ return
 proc ++ 1 + return
 proc -- 1 - return
 
-proc False 0 return
-proc True  1 return
+proc false 0 return
+proc true  1 return
 
-#define for     -1 while dup
-#define times   -- < do ++
+# for:
+#     after the first iteration, for expects idx to be
+#     the last item of the stack.
+# times:
+#     times will leave the idx as the last item of the
+#     stack.
+# end:
+#     idx should be the last item of the stack when it
+#     is reached.
+#define for*     -1 while dup
+#define times*   -- < do ++
 
 proc say puts return
+
+proc cls "cls" system return
+
+proc ask puts input return
 
 # code here

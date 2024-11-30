@@ -1,8 +1,10 @@
 #include <stdlib.gx>
 
 proc main
-    for 16 times
-        "this is iteration: " say println
+    for* 16 times*
+        for* 8 times*
+            "this is iteration: " say println
+        end drop
     end
 return
 

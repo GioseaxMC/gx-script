@@ -1,0 +1,8 @@
+#include <stdlib.gx>
+
+"Insert string-1: " puts input
+"Insert string-2: " puts input
+
+stoi2
+
+"The sum is: " puts + print
