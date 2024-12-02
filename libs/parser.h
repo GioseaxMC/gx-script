@@ -54,15 +54,17 @@ vector<string> parse_tokens(string &file, vector<vector<int>> positions){
                             temp += '\t';
                         } elif (c == '\\') {
                             temp += '\\';
+                        } elif (c == '"') {
+                            temp += '"';
                         }
                         else {
                             printf("unknown escape code:\n\t- \\%c\n", c);
                         }
+                    } elif (c == '\"') {
+                        temp += c;
+                        break;
                     } else {
                         temp += c;
-                    }
-                    if (c == '\"') {
-                        break;
                     }
                 }
                 cout_debug(<< "str: '" << temp << "'\n");

@@ -1,0 +1,12 @@
+#include <stdlib.gx>
+
+"commands.dump" "argv: " writeln
+
+proc stk.write
+    while stk.len 2 >= do
+        swap appendln
+    end
+return
+
+stk.write
+

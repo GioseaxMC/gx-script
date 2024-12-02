@@ -85,6 +85,7 @@ struct {
     const int STR_SUM = iota();
     const int READ_FILE = iota();
     const int STACK_LEN = iota();
+    const int WRITE = iota();
 
     const int lenght = iota();
 } op;
@@ -177,7 +178,7 @@ string get_name(int idx) {
         return "str-sum";
     } elif (idx == op.READ_FILE) {
         return "read-file";
-    } elif (idx == op.STACK_DUMP) {
+    } elif (idx == op.STACK_LEN) {
         return "stack-len";
     }
     else {
@@ -970,7 +971,9 @@ int inter_main(vector<action> &program, vector<void*> &stack){
 
 
             } case 40: { // SYSTEM
-                system(pop_value<string>(stack).c_str());
+                string cmd = pop_value<string>(stack);
+                cout << "command: " << cmd << endl;
+                system(cmd.c_str());
                 break;
 
 
@@ -1005,6 +1008,7 @@ int inter_main(vector<action> &program, vector<void*> &stack){
             stack_dump(stack);
             // system("pause");
             cout << "instruction idx: " << i-1 << " with name " << get_name(act.id) << "\n";
+            cout << "NEXT UP: idx: " << i << " with name " << get_name(program[i].id) << "\n";
         # endif
     }
     // cout << references["swap_buffers"] << endl;

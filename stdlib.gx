@@ -24,7 +24,7 @@ proc print dup dump return
 proc space " " puts return
  
 proc not;
-    if 0 else 1 end
+    if 0 else 2 end
 return
 
 proc <= > not return
@@ -79,6 +79,12 @@ proc stk.empty
     stk.len not
 return
 
+proc stk.clear
+    while stk.len do
+        drop
+    end
+return
+
 # {x*n} int -- {x*(n-int)}
 proc drop_items
     while dup 0 > do
@@ -89,4 +95,34 @@ proc drop_items
     end drop
 return
 
-# code here
+# \==========================\
+# \         writing          \
+# \==========================\
+
+# file str -- file
+proc write
+    swap strdup rotate
+    "<nul set /p=" swap strsum
+    "> " strsum swap strsum system
+return
+
+# file str -- file
+proc append
+    swap strdup rotate
+    "<nul set /p=" swap strsum
+    ">> " strsum swap strsum system
+return
+
+# file str -- file
+proc writeln
+    swap strdup rotate
+    "echo " swap strsum
+    "> " strsum swap strsum system
+return
+
+# file str -- file
+proc appendln
+    swap strdup rotate
+    "echo " swap strsum
+    ">> " strsum swap strsum system
+return
