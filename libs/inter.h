@@ -4,7 +4,7 @@
 # define deref(type, ptr) *((type*)(ptr))
 # define elif else if
 
-# define int64 uint64_t
+# define int64 size_t
 
 # define DEBUG0
 
@@ -81,6 +81,8 @@ struct {
     const int INPUT = iota();
     const int SYSTEM = iota();
     const int STR_SUM = iota();
+    const int READ_FILE = iota();
+    const int STACK_LEN = iota();
 
     const int lenght = iota();
 } op;
@@ -171,6 +173,10 @@ string get_name(int idx) {
         return "system";
     } elif (idx == op.STR_SUM) {
         return "str-sum";
+    } elif (idx == op.READ_FILE) {
+        return "read-file";
+    } elif (idx == op.STACK_DUMP) {
+        return "stack-len";
     }
     else {
         return "-";
@@ -441,6 +447,18 @@ action str_sum() {
     return temp;
 }
 
+action _read_file() {
+    action temp;
+    temp.id = op.READ_FILE;
+    return temp;
+}
+
+action _stack_len() {
+    action temp;
+    temp.id = op.STACK_LEN;
+    return temp;
+}
+
 template<typename T>
 T pop_value(vector<void*> &stack) {
     if (stack.size()) {
@@ -552,6 +570,10 @@ void parse_program(vector<string> tokens, vector<action> &temp){
             temp.push_back(_system());
         } elif (str == "strsum") {
             temp.push_back(str_sum());
+        } elif (str == "read_file") {
+            temp.push_back(_read_file());
+        } elif (str == "stk.len") {
+            temp.push_back(_stack_len());
         }
         else {
             if (references.contains(str)) {
@@ -958,6 +980,18 @@ int inter_main(vector<action> &program, vector<void*> &stack){
                 break;
 
 
+            } case 42: { // READ FILE
+                string str = read_file(pop_value<string>(stack));
+                push_to<string>(stack, new_ptr(str));
+                break;
+
+                
+            } case 43: {
+                int temp = stack.size();
+                push_to<int>(stack, new_ptr<int>(&temp));
+                break;
+            
+            
             }
             default:{
                 break;

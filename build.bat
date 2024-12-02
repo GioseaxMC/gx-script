@@ -1,5 +1,5 @@
 @echo off
 
 del gxx.exe
-g++ gxx.cpp -o gxx
-.\gxx %1
+g++ gxx.cpp -o gxx.exe
+.\gxx %*

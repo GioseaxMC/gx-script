@@ -1,0 +1,16 @@
+#include <stdlib.gx>
+
+proc stk.clear
+    while stk.len do
+        drop
+    end
+return
+
+1 2 43 4 6
+"ciao"
+
+stk.len dump newl
+
+stk.clear
+
+stk.len dump newl

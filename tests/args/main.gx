@@ -1,0 +1,12 @@
+#include <stdlib.gx>
+
+proc dump_args 
+    while stk.len do
+        puts
+        stk.len if
+            "\n|| -- -- -- -- ||\n" puts
+        end
+    end
+return
+
+dump_args

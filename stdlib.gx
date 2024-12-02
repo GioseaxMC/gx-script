@@ -52,6 +52,8 @@ proc -- 1 - return
 proc false 0 return
 proc true  1 return
 
+# =====================================================\
+#
 # for:
 #     after the first iteration, for expects idx to be
 #     the last item of the stack.
@@ -61,13 +63,30 @@ proc true  1 return
 # end:
 #     idx should be the last item of the stack when it
 #     is reached.
+#
 #define for*     -1 while dup
 #define times*   -- < do ++
+#
+# =====================================================/
 
 proc say puts return
 
 proc cls "cls" system return
 
 proc ask puts input return
+
+proc stk.empty
+    stk.len not
+return
+
+# {x*n} int -- {x*(n-int)}
+proc drop_items
+    while dup 0 > do
+        stk.len 1 - if
+            swap drop
+        end
+        --
+    end drop
+return
 
 # code here

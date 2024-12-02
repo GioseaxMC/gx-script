@@ -1,0 +1,5 @@
+#include <stdlib.gx>
+
+2 drop_items
+
+read_file puts

@@ -3,25 +3,25 @@
 proc eval_bit;
     dup 0 = if
         0
-    else dup 1 = if
+    else dup 1 = if*
         1
-    else dup 2 = if
+    else dup 2 = if*
             1
-    else dup 3 = if
+    else dup 3 = if*
             1
-    else dup 4 = if
+    else dup 4 = if*
             0
-    else dup 5 = if
+    else dup 5 = if*
             1
-    else dup 6 = if
+    else dup 6 = if*
             1
-    else dup 7 = if
+    else dup 7 = if*
             0
     else
         0
     end swap drop
 return
 
-7 eval_bit
+6 eval_bit
 
 dump
