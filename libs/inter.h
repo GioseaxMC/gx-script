@@ -3,8 +3,10 @@
 
 # define deref(type, ptr) *((type*)(ptr))
 # define elif else if
-
 # define int64 size_t
+
+# define range(var, end) (int var = 0; var < end; var++)
+# define irange(var, end) (int var = end-1; var >= 0; var--)
 
 # define DEBUG0
 

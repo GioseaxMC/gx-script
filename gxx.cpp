@@ -3,9 +3,6 @@
 
 # include "libs\parser.h"
 
-# define range(var, end) (int var = 0; var < end; var++)
-# define irange(var, end) (int var = end-1; var >= 0; var--)
-
 using namespace std;
 
 vector<string> arguments;
@@ -16,7 +13,7 @@ int main(int argc, char** argv) {
     }
 
     if (argc >= 2) {
-        string file_name = string(argv[1]);
+        string file_name = arguments[1];
         string file = init_file(file_name);
         # ifdef DEBUG
             cout << "\n--" << file << "\n--\n";
