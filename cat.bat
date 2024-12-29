@@ -1,3 +1,3 @@
 @echo off
 
-.\gxx tests\cat\main.gx %1
+.\gxx tests\cat\main.gx %*

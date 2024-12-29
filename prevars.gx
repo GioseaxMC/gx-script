@@ -1,0 +1,302 @@
+100 4 * malloc let.ptr _xyz_HEAP
+
+proc  VAR0 _xyz_HEAP 0 4 * ptr+ R.int swap drop return
+proc _VAR0 _xyz_HEAP 0 4 * ptr+ swap W.int drop return
+
+proc  VAR1 _xyz_HEAP 1 4 * ptr+ R.int swap drop return
+proc _VAR1 _xyz_HEAP 1 4 * ptr+ swap W.int drop return
+
+proc  VAR2 _xyz_HEAP 2 4 * ptr+ R.int swap drop return
+proc _VAR2 _xyz_HEAP 2 4 * ptr+ swap W.int drop return
+
+proc  VAR3 _xyz_HEAP 3 4 * ptr+ R.int swap drop return
+proc _VAR3 _xyz_HEAP 3 4 * ptr+ swap W.int drop return
+
+proc  VAR4 _xyz_HEAP 4 4 * ptr+ R.int swap drop return
+proc _VAR4 _xyz_HEAP 4 4 * ptr+ swap W.int drop return
+
+proc  VAR5 _xyz_HEAP 5 4 * ptr+ R.int swap drop return
+proc _VAR5 _xyz_HEAP 5 4 * ptr+ swap W.int drop return
+
+proc  VAR6 _xyz_HEAP 6 4 * ptr+ R.int swap drop return
+proc _VAR6 _xyz_HEAP 6 4 * ptr+ swap W.int drop return
+
+proc  VAR7 _xyz_HEAP 7 4 * ptr+ R.int swap drop return
+proc _VAR7 _xyz_HEAP 7 4 * ptr+ swap W.int drop return
+
+proc  VAR8 _xyz_HEAP 8 4 * ptr+ R.int swap drop return
+proc _VAR8 _xyz_HEAP 8 4 * ptr+ swap W.int drop return
+
+proc  VAR9 _xyz_HEAP 9 4 * ptr+ R.int swap drop return
+proc _VAR9 _xyz_HEAP 9 4 * ptr+ swap W.int drop return
+
+proc  VAR10 _xyz_HEAP 10 4 * ptr+ R.int swap drop return
+proc _VAR10 _xyz_HEAP 10 4 * ptr+ swap W.int drop return
+
+proc  VAR11 _xyz_HEAP 11 4 * ptr+ R.int swap drop return
+proc _VAR11 _xyz_HEAP 11 4 * ptr+ swap W.int drop return
+
+proc  VAR12 _xyz_HEAP 12 4 * ptr+ R.int swap drop return
+proc _VAR12 _xyz_HEAP 12 4 * ptr+ swap W.int drop return
+
+proc  VAR13 _xyz_HEAP 13 4 * ptr+ R.int swap drop return
+proc _VAR13 _xyz_HEAP 13 4 * ptr+ swap W.int drop return
+
+proc  VAR14 _xyz_HEAP 14 4 * ptr+ R.int swap drop return
+proc _VAR14 _xyz_HEAP 14 4 * ptr+ swap W.int drop return
+
+proc  VAR15 _xyz_HEAP 15 4 * ptr+ R.int swap drop return
+proc _VAR15 _xyz_HEAP 15 4 * ptr+ swap W.int drop return
+
+proc  VAR16 _xyz_HEAP 16 4 * ptr+ R.int swap drop return
+proc _VAR16 _xyz_HEAP 16 4 * ptr+ swap W.int drop return
+
+proc  VAR17 _xyz_HEAP 17 4 * ptr+ R.int swap drop return
+proc _VAR17 _xyz_HEAP 17 4 * ptr+ swap W.int drop return
+
+proc  VAR18 _xyz_HEAP 18 4 * ptr+ R.int swap drop return
+proc _VAR18 _xyz_HEAP 18 4 * ptr+ swap W.int drop return
+
+proc  VAR19 _xyz_HEAP 19 4 * ptr+ R.int swap drop return
+proc _VAR19 _xyz_HEAP 19 4 * ptr+ swap W.int drop return
+
+proc  VAR20 _xyz_HEAP 20 4 * ptr+ R.int swap drop return
+proc _VAR20 _xyz_HEAP 20 4 * ptr+ swap W.int drop return
+
+proc  VAR21 _xyz_HEAP 21 4 * ptr+ R.int swap drop return
+proc _VAR21 _xyz_HEAP 21 4 * ptr+ swap W.int drop return
+
+proc  VAR22 _xyz_HEAP 22 4 * ptr+ R.int swap drop return
+proc _VAR22 _xyz_HEAP 22 4 * ptr+ swap W.int drop return
+
+proc  VAR23 _xyz_HEAP 23 4 * ptr+ R.int swap drop return
+proc _VAR23 _xyz_HEAP 23 4 * ptr+ swap W.int drop return
+
+proc  VAR24 _xyz_HEAP 24 4 * ptr+ R.int swap drop return
+proc _VAR24 _xyz_HEAP 24 4 * ptr+ swap W.int drop return
+
+proc  VAR25 _xyz_HEAP 25 4 * ptr+ R.int swap drop return
+proc _VAR25 _xyz_HEAP 25 4 * ptr+ swap W.int drop return
+
+proc  VAR26 _xyz_HEAP 26 4 * ptr+ R.int swap drop return
+proc _VAR26 _xyz_HEAP 26 4 * ptr+ swap W.int drop return
+
+proc  VAR27 _xyz_HEAP 27 4 * ptr+ R.int swap drop return
+proc _VAR27 _xyz_HEAP 27 4 * ptr+ swap W.int drop return
+
+proc  VAR28 _xyz_HEAP 28 4 * ptr+ R.int swap drop return
+proc _VAR28 _xyz_HEAP 28 4 * ptr+ swap W.int drop return
+
+proc  VAR29 _xyz_HEAP 29 4 * ptr+ R.int swap drop return
+proc _VAR29 _xyz_HEAP 29 4 * ptr+ swap W.int drop return
+
+proc  VAR30 _xyz_HEAP 30 4 * ptr+ R.int swap drop return
+proc _VAR30 _xyz_HEAP 30 4 * ptr+ swap W.int drop return
+
+proc  VAR31 _xyz_HEAP 31 4 * ptr+ R.int swap drop return
+proc _VAR31 _xyz_HEAP 31 4 * ptr+ swap W.int drop return
+
+proc  VAR32 _xyz_HEAP 32 4 * ptr+ R.int swap drop return
+proc _VAR32 _xyz_HEAP 32 4 * ptr+ swap W.int drop return
+
+proc  VAR33 _xyz_HEAP 33 4 * ptr+ R.int swap drop return
+proc _VAR33 _xyz_HEAP 33 4 * ptr+ swap W.int drop return
+
+proc  VAR34 _xyz_HEAP 34 4 * ptr+ R.int swap drop return
+proc _VAR34 _xyz_HEAP 34 4 * ptr+ swap W.int drop return
+
+proc  VAR35 _xyz_HEAP 35 4 * ptr+ R.int swap drop return
+proc _VAR35 _xyz_HEAP 35 4 * ptr+ swap W.int drop return
+
+proc  VAR36 _xyz_HEAP 36 4 * ptr+ R.int swap drop return
+proc _VAR36 _xyz_HEAP 36 4 * ptr+ swap W.int drop return
+
+proc  VAR37 _xyz_HEAP 37 4 * ptr+ R.int swap drop return
+proc _VAR37 _xyz_HEAP 37 4 * ptr+ swap W.int drop return
+
+proc  VAR38 _xyz_HEAP 38 4 * ptr+ R.int swap drop return
+proc _VAR38 _xyz_HEAP 38 4 * ptr+ swap W.int drop return
+
+proc  VAR39 _xyz_HEAP 39 4 * ptr+ R.int swap drop return
+proc _VAR39 _xyz_HEAP 39 4 * ptr+ swap W.int drop return
+
+proc  VAR40 _xyz_HEAP 40 4 * ptr+ R.int swap drop return
+proc _VAR40 _xyz_HEAP 40 4 * ptr+ swap W.int drop return
+
+proc  VAR41 _xyz_HEAP 41 4 * ptr+ R.int swap drop return
+proc _VAR41 _xyz_HEAP 41 4 * ptr+ swap W.int drop return
+
+proc  VAR42 _xyz_HEAP 42 4 * ptr+ R.int swap drop return
+proc _VAR42 _xyz_HEAP 42 4 * ptr+ swap W.int drop return
+
+proc  VAR43 _xyz_HEAP 43 4 * ptr+ R.int swap drop return
+proc _VAR43 _xyz_HEAP 43 4 * ptr+ swap W.int drop return
+
+proc  VAR44 _xyz_HEAP 44 4 * ptr+ R.int swap drop return
+proc _VAR44 _xyz_HEAP 44 4 * ptr+ swap W.int drop return
+
+proc  VAR45 _xyz_HEAP 45 4 * ptr+ R.int swap drop return
+proc _VAR45 _xyz_HEAP 45 4 * ptr+ swap W.int drop return
+
+proc  VAR46 _xyz_HEAP 46 4 * ptr+ R.int swap drop return
+proc _VAR46 _xyz_HEAP 46 4 * ptr+ swap W.int drop return
+
+proc  VAR47 _xyz_HEAP 47 4 * ptr+ R.int swap drop return
+proc _VAR47 _xyz_HEAP 47 4 * ptr+ swap W.int drop return
+
+proc  VAR48 _xyz_HEAP 48 4 * ptr+ R.int swap drop return
+proc _VAR48 _xyz_HEAP 48 4 * ptr+ swap W.int drop return
+
+proc  VAR49 _xyz_HEAP 49 4 * ptr+ R.int swap drop return
+proc _VAR49 _xyz_HEAP 49 4 * ptr+ swap W.int drop return
+
+proc  VAR50 _xyz_HEAP 50 4 * ptr+ R.int swap drop return
+proc _VAR50 _xyz_HEAP 50 4 * ptr+ swap W.int drop return
+
+proc  VAR51 _xyz_HEAP 51 4 * ptr+ R.int swap drop return
+proc _VAR51 _xyz_HEAP 51 4 * ptr+ swap W.int drop return
+
+proc  VAR52 _xyz_HEAP 52 4 * ptr+ R.int swap drop return
+proc _VAR52 _xyz_HEAP 52 4 * ptr+ swap W.int drop return
+
+proc  VAR53 _xyz_HEAP 53 4 * ptr+ R.int swap drop return
+proc _VAR53 _xyz_HEAP 53 4 * ptr+ swap W.int drop return
+
+proc  VAR54 _xyz_HEAP 54 4 * ptr+ R.int swap drop return
+proc _VAR54 _xyz_HEAP 54 4 * ptr+ swap W.int drop return
+
+proc  VAR55 _xyz_HEAP 55 4 * ptr+ R.int swap drop return
+proc _VAR55 _xyz_HEAP 55 4 * ptr+ swap W.int drop return
+
+proc  VAR56 _xyz_HEAP 56 4 * ptr+ R.int swap drop return
+proc _VAR56 _xyz_HEAP 56 4 * ptr+ swap W.int drop return
+
+proc  VAR57 _xyz_HEAP 57 4 * ptr+ R.int swap drop return
+proc _VAR57 _xyz_HEAP 57 4 * ptr+ swap W.int drop return
+
+proc  VAR58 _xyz_HEAP 58 4 * ptr+ R.int swap drop return
+proc _VAR58 _xyz_HEAP 58 4 * ptr+ swap W.int drop return
+
+proc  VAR59 _xyz_HEAP 59 4 * ptr+ R.int swap drop return
+proc _VAR59 _xyz_HEAP 59 4 * ptr+ swap W.int drop return
+
+proc  VAR60 _xyz_HEAP 60 4 * ptr+ R.int swap drop return
+proc _VAR60 _xyz_HEAP 60 4 * ptr+ swap W.int drop return
+
+proc  VAR61 _xyz_HEAP 61 4 * ptr+ R.int swap drop return
+proc _VAR61 _xyz_HEAP 61 4 * ptr+ swap W.int drop return
+
+proc  VAR62 _xyz_HEAP 62 4 * ptr+ R.int swap drop return
+proc _VAR62 _xyz_HEAP 62 4 * ptr+ swap W.int drop return
+
+proc  VAR63 _xyz_HEAP 63 4 * ptr+ R.int swap drop return
+proc _VAR63 _xyz_HEAP 63 4 * ptr+ swap W.int drop return
+
+proc  VAR64 _xyz_HEAP 64 4 * ptr+ R.int swap drop return
+proc _VAR64 _xyz_HEAP 64 4 * ptr+ swap W.int drop return
+
+proc  VAR65 _xyz_HEAP 65 4 * ptr+ R.int swap drop return
+proc _VAR65 _xyz_HEAP 65 4 * ptr+ swap W.int drop return
+
+proc  VAR66 _xyz_HEAP 66 4 * ptr+ R.int swap drop return
+proc _VAR66 _xyz_HEAP 66 4 * ptr+ swap W.int drop return
+
+proc  VAR67 _xyz_HEAP 67 4 * ptr+ R.int swap drop return
+proc _VAR67 _xyz_HEAP 67 4 * ptr+ swap W.int drop return
+
+proc  VAR68 _xyz_HEAP 68 4 * ptr+ R.int swap drop return
+proc _VAR68 _xyz_HEAP 68 4 * ptr+ swap W.int drop return
+
+proc  VAR69 _xyz_HEAP 69 4 * ptr+ R.int swap drop return
+proc _VAR69 _xyz_HEAP 69 4 * ptr+ swap W.int drop return
+
+proc  VAR70 _xyz_HEAP 70 4 * ptr+ R.int swap drop return
+proc _VAR70 _xyz_HEAP 70 4 * ptr+ swap W.int drop return
+
+proc  VAR71 _xyz_HEAP 71 4 * ptr+ R.int swap drop return
+proc _VAR71 _xyz_HEAP 71 4 * ptr+ swap W.int drop return
+
+proc  VAR72 _xyz_HEAP 72 4 * ptr+ R.int swap drop return
+proc _VAR72 _xyz_HEAP 72 4 * ptr+ swap W.int drop return
+
+proc  VAR73 _xyz_HEAP 73 4 * ptr+ R.int swap drop return
+proc _VAR73 _xyz_HEAP 73 4 * ptr+ swap W.int drop return
+
+proc  VAR74 _xyz_HEAP 74 4 * ptr+ R.int swap drop return
+proc _VAR74 _xyz_HEAP 74 4 * ptr+ swap W.int drop return
+
+proc  VAR75 _xyz_HEAP 75 4 * ptr+ R.int swap drop return
+proc _VAR75 _xyz_HEAP 75 4 * ptr+ swap W.int drop return
+
+proc  VAR76 _xyz_HEAP 76 4 * ptr+ R.int swap drop return
+proc _VAR76 _xyz_HEAP 76 4 * ptr+ swap W.int drop return
+
+proc  VAR77 _xyz_HEAP 77 4 * ptr+ R.int swap drop return
+proc _VAR77 _xyz_HEAP 77 4 * ptr+ swap W.int drop return
+
+proc  VAR78 _xyz_HEAP 78 4 * ptr+ R.int swap drop return
+proc _VAR78 _xyz_HEAP 78 4 * ptr+ swap W.int drop return
+
+proc  VAR79 _xyz_HEAP 79 4 * ptr+ R.int swap drop return
+proc _VAR79 _xyz_HEAP 79 4 * ptr+ swap W.int drop return
+
+proc  VAR80 _xyz_HEAP 80 4 * ptr+ R.int swap drop return
+proc _VAR80 _xyz_HEAP 80 4 * ptr+ swap W.int drop return
+
+proc  VAR81 _xyz_HEAP 81 4 * ptr+ R.int swap drop return
+proc _VAR81 _xyz_HEAP 81 4 * ptr+ swap W.int drop return
+
+proc  VAR82 _xyz_HEAP 82 4 * ptr+ R.int swap drop return
+proc _VAR82 _xyz_HEAP 82 4 * ptr+ swap W.int drop return
+
+proc  VAR83 _xyz_HEAP 83 4 * ptr+ R.int swap drop return
+proc _VAR83 _xyz_HEAP 83 4 * ptr+ swap W.int drop return
+
+proc  VAR84 _xyz_HEAP 84 4 * ptr+ R.int swap drop return
+proc _VAR84 _xyz_HEAP 84 4 * ptr+ swap W.int drop return
+
+proc  VAR85 _xyz_HEAP 85 4 * ptr+ R.int swap drop return
+proc _VAR85 _xyz_HEAP 85 4 * ptr+ swap W.int drop return
+
+proc  VAR86 _xyz_HEAP 86 4 * ptr+ R.int swap drop return
+proc _VAR86 _xyz_HEAP 86 4 * ptr+ swap W.int drop return
+
+proc  VAR87 _xyz_HEAP 87 4 * ptr+ R.int swap drop return
+proc _VAR87 _xyz_HEAP 87 4 * ptr+ swap W.int drop return
+
+proc  VAR88 _xyz_HEAP 88 4 * ptr+ R.int swap drop return
+proc _VAR88 _xyz_HEAP 88 4 * ptr+ swap W.int drop return
+
+proc  VAR89 _xyz_HEAP 89 4 * ptr+ R.int swap drop return
+proc _VAR89 _xyz_HEAP 89 4 * ptr+ swap W.int drop return
+
+proc  VAR90 _xyz_HEAP 90 4 * ptr+ R.int swap drop return
+proc _VAR90 _xyz_HEAP 90 4 * ptr+ swap W.int drop return
+
+proc  VAR91 _xyz_HEAP 91 4 * ptr+ R.int swap drop return
+proc _VAR91 _xyz_HEAP 91 4 * ptr+ swap W.int drop return
+
+proc  VAR92 _xyz_HEAP 92 4 * ptr+ R.int swap drop return
+proc _VAR92 _xyz_HEAP 92 4 * ptr+ swap W.int drop return
+
+proc  VAR93 _xyz_HEAP 93 4 * ptr+ R.int swap drop return
+proc _VAR93 _xyz_HEAP 93 4 * ptr+ swap W.int drop return
+
+proc  VAR94 _xyz_HEAP 94 4 * ptr+ R.int swap drop return
+proc _VAR94 _xyz_HEAP 94 4 * ptr+ swap W.int drop return
+
+proc  VAR95 _xyz_HEAP 95 4 * ptr+ R.int swap drop return
+proc _VAR95 _xyz_HEAP 95 4 * ptr+ swap W.int drop return
+
+proc  VAR96 _xyz_HEAP 96 4 * ptr+ R.int swap drop return
+proc _VAR96 _xyz_HEAP 96 4 * ptr+ swap W.int drop return
+
+proc  VAR97 _xyz_HEAP 97 4 * ptr+ R.int swap drop return
+proc _VAR97 _xyz_HEAP 97 4 * ptr+ swap W.int drop return
+
+proc  VAR98 _xyz_HEAP 98 4 * ptr+ R.int swap drop return
+proc _VAR98 _xyz_HEAP 98 4 * ptr+ swap W.int drop return
+
+proc  VAR99 _xyz_HEAP 99 4 * ptr+ R.int swap drop return
+proc _VAR99 _xyz_HEAP 99 4 * ptr+ swap W.int drop return
+

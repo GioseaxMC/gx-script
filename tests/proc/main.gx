@@ -1,11 +1,22 @@
-#include <stdlib.gx>
-
 proc main
-    1 dump
-return
+    while 0 do
+        1 if
+            1 if
+                1 if
+                    
+                end
+            else
+                
+            end
+        else
+            1 if
 
-proc do_main
-    main main
-return
+            else 1 if*
 
-do_main
+            else
+            
+            end swap
+        end
+        stk
+    end
+return

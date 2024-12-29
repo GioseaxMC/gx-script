@@ -113,7 +113,7 @@ void handle_inclusion(string &file, string file_name) {
         if (header_type) {
             string target_header = derep_str(tks[1]);
             path header_path = target_header;
-            cout_debug(<< "INCLUDE: including file at '" << p2 << "'\n");
+            cout_debug(<< "INCLUDE: including file at '" << p2 << "'\n"); 
             if (header_type == 1) {
                 p2 = p2.dir_name();
                 p2 += header_path;
@@ -124,7 +124,7 @@ void handle_inclusion(string &file, string file_name) {
             file.insert(str_position, read_file(p2())+"\n");
         } else {
             cout << "ERROR: Inclusion failed in:\n\t - " << p2 << ":" << /* line name << */ ":" << 10 << "\n";
-            throw -1;
+            exit(-1);
         }
     }
 }

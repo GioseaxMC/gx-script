@@ -1,12 +1,21 @@
 #include <stdlib.gx>
 
-"commands.dump" "argv: " writeln
-
 proc stk.write
-    while stk.len 2 >= do
+    while stk.len 1 > do
         swap appendln
     end
 return
 
-stk.write
+proc main
+    stk.empty not if
+        "echo %cd%" system
+        
+        "commands.dump" "argv: " writeln
+        
+        stk.write
+        
+        "done" puts
+    end
+return
 
+main

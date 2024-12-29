@@ -1,12 +1,12 @@
 proc dup_to_third dup rotate rotate return
-proc dup_third_str strdup rotate rotate return
+proc dup_third_str str.dup rotate rotate return
 
 proc dup_2;
     swap dup_to_third;
     swap dup_to_third
 return
 
-proc strdup2;
+proc str.dup2;
     swap dup_third_str;
     swap dup_third_str
 return
@@ -19,6 +19,7 @@ proc stk stack_dump pause return
 proc drop2 drop drop return
 proc stoi2 stoi swap stoi swap return
 proc putsln puts newl return
+proc dumpln dump newl return
 proc println dup dump newl return
 proc print dup dump return
 proc space " " puts return
@@ -99,30 +100,34 @@ return
 # \         writing          \
 # \==========================\
 
+proc mkdir
+    "mkdir " swap strsum system
+return
+
 # file str -- file
 proc write
-    swap strdup rotate
+    swap str.dup rotate
     "<nul set /p=" swap strsum
     "> " strsum swap strsum system
 return
 
 # file str -- file
 proc append
-    swap strdup rotate
+    swap str.dup rotate
     "<nul set /p=" swap strsum
     ">> " strsum swap strsum system
 return
 
 # file str -- file
 proc writeln
-    swap strdup rotate
+    swap str.dup rotate
     "echo " swap strsum
     "> " strsum swap strsum system
 return
 
 # file str -- file
 proc appendln
-    swap strdup rotate
+    swap str.dup rotate
     "echo " swap strsum
     ">> " strsum swap strsum system
 return

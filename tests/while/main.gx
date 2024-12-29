@@ -1,14 +1,7 @@
-#include <stdlib.gx>
-
-16 0
-while dup_2 > do
-  print space
-  1 +
-  8 0
-  while dup_2 > do
-    print space
-    1 +
-  end
-  drop2
-  newl
+1 if
+    "why am i here\n" puts
+    0 while dup 12 < do 
+        "ciao\n" puts
+        1 +
+    end drop
 end

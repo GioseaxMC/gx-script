@@ -1,8 +1,20 @@
 #include "strutils.h"
 
+#ifdef _WIN32
+    #include <direct.h>
+    #define CHANGE_DIR _chdir
+#else
+    #include <unistd.h>
+    #define CHANGE_DIR chdir
+#endif
+
 using namespace std;
 
 #define elif else if
+
+bool setcwd(string& newPath) {
+    return(CHANGE_DIR(newPath.c_str()) == 0);
+}
 
 string path_delims = "\\/";
 

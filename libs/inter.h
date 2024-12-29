@@ -30,7 +30,7 @@ void* new_ptr(string str_ptr) {
     string* n_str = static_cast<string*>(malloc(sizeof(string)));
     if (!n_str) {
         cout << "FATAL ERROR: buy more ram... LITERALLY\n";
-        throw bad_alloc();
+        exit(-1);
     }
 
     new (n_str) string(str_ptr);
@@ -38,7 +38,8 @@ void* new_ptr(string str_ptr) {
     return static_cast<void*>(n_str);
 }
 
-Hash<int> references;
+Hash<int> proc_references;
+Hash<void*>  let_references;
 
 struct {
     const int PUSH = iota(1);
@@ -85,11 +86,15 @@ struct {
     const int STR_SUM = iota();
     const int READ_FILE = iota();
     const int STACK_LEN = iota();
-    const int WRITE = iota();
+    const int SETCWD = iota();
+    const int STRIP_RIGHT = iota();
+    const int STR_LEN = iota();
+    const int LET = iota();
+    const int LET_NAME = iota();
+    const int SDROP = iota();
 
     const int lenght = iota();
 } op;
-
 
 string get_name(int idx) {
     if (idx == op.PUSH) {
@@ -180,6 +185,18 @@ string get_name(int idx) {
         return "read-file";
     } elif (idx == op.STACK_LEN) {
         return "stack-len";
+    } elif (idx == op.SETCWD) {
+        return "chdir";
+    } elif (idx == op.STRIP_RIGHT) {
+        return "strip-right";
+    } elif (idx == op.STR_LEN) {
+        return "string-length";
+    } elif (idx == op.LET) {
+        return "let-word";
+    } elif (idx == op.LET_NAME) {
+        return "let-name";
+    } elif (idx == op.SDROP) {
+        return "soft-drop";
     }
     else {
         return "-";
@@ -187,6 +204,9 @@ string get_name(int idx) {
 }
 
 struct action{
+    int row;
+    int col;
+    string* file_name;
     int id;
     void* value = malloc(sizeof(void*)); // alloc s(void*) bytes for pointers
 };
@@ -402,7 +422,7 @@ action ref(string &name) { // TODO: figure out if must be removed
 action proc_name(string &name) {
     action temp;
     string* str_ptr = new string(name);
-    references.add(name, -1);
+    proc_references.add(name, -1);
     temp.value = str_ptr;
     temp.id = op.PROC_NAME;
     return temp;
@@ -462,6 +482,50 @@ action _stack_len() {
     return temp;
 }
 
+action _setcwd() {
+    action temp;
+    temp.id = op.SETCWD;
+    return temp;
+}
+
+action _strright() {
+    action temp;
+    temp.id = op.STRIP_RIGHT;
+    return temp;
+}
+
+action _strlen() {
+    action temp;
+    temp.id = op.STR_LEN;
+    return temp;
+}
+
+action _let() {
+    action temp;
+    temp.id = op.LET;
+    return temp;
+}
+
+action _let_name(string &name) {
+    action temp;
+    string* str_ptr = new string(name);
+    let_references.add(name, nullptr);
+    temp.value = str_ptr;
+    temp.id = op.LET_NAME;
+    return temp;
+}
+
+action soft_drop() {
+    action temp;
+    temp.id = op.SDROP;
+    return temp;
+}
+
+void compiler_error(string str) {
+    cout << "ERROR: " << str << "\n";
+    exit(-1);
+}
+
 template<typename T>
 T pop_value(vector<void*> &stack) {
     if (stack.size()) {
@@ -471,8 +535,7 @@ T pop_value(vector<void*> &stack) {
         stack.pop_back();
         return x;
     } else {
-        printf("Error: Segmentation fault : stack size is %i\n", stack.size());
-        throw -1;
+        compiler_error("Segmentation fault : stack size is: " + string(1, stack.size()));
     }
 }
 
@@ -537,9 +600,9 @@ void parse_program(vector<string> tokens, vector<action> &temp){
             temp.push_back(act);
         } elif (str == "puts") {
             temp.push_back(puts());
-        } elif (str == "strcmp") {
+        } elif (str == "str.cmp") {
             temp.push_back(str_cmp());
-        } elif (str == "strdup") {
+        } elif (str == "str.dup") {
             temp.push_back(str_dup());
         } elif (str == "malloc") {
             temp.push_back(alloc());
@@ -577,11 +640,25 @@ void parse_program(vector<string> tokens, vector<action> &temp){
             temp.push_back(_read_file());
         } elif (str == "stk.len") {
             temp.push_back(_stack_len());
+        } elif (str == "chdir") {
+            temp.push_back(_setcwd());
+        } elif (str == "str.rstrip") {
+            temp.push_back(_strright());
+        } elif (str == "str.len") {
+            temp.push_back(_strlen());
+        } elif (str == "let.ptr") {
+            temp.push_back(_let());
+            temp.push_back(_let_name(tokens[++i]));
+            cout_debug(<< "declared let: " << tokens[i] << endl);
+        } elif (str == "soft-drop") {
+            temp.push_back(soft_drop());
         }
         else {
-            if (references.contains(str)) {
+            if (proc_references.contains(str)) {
                 temp.push_back(ref(str));
                 cout_debug(<< "referenced: " << str << endl);
+            } elif (let_references.contains(str)) {
+                temp.push_back(ref(str));
             } else {
                 printf("unknown instruction '%s' at position '%i'\n", str.c_str(), i);
             }   
@@ -603,6 +680,7 @@ void actions_dump(vector<action> &acts) {
     }
 }
 
+#define bid op_stack.back()->id
 void compute_crossreference(vector<action> &acts) {
     vector<action*> op_stack; // Moved this outside the loop
     // actions_dump(acts);
@@ -612,7 +690,7 @@ void compute_crossreference(vector<action> &acts) {
         int id = act->id;
         i++;
         
-        // printf_debug(("crossreferencing instruction '%s'\n", get_name(id).c_str()));
+        printf_debug(("COMP: crossreferencing instruction '%s'\n", get_name(id).c_str()));
         
         if (id == op.IF or id == op.ELIF) { // IF
             op_stack.push_back(act);
@@ -624,28 +702,37 @@ void compute_crossreference(vector<action> &acts) {
                     deref(int, op_stack.back()->value) = i;
                     cout_debug(<< "setting else-1 which is: " << get_name(op_stack.back()->id) << endl);
                     op_stack.pop_back();
-                    if (type == -1 and !op_stack.empty()) {
+                    if (type == -1) {
+                        if (op_stack.empty()) compiler_error("'if*' should only be used after an else, maybe you meant 'if'");
                         if (op_stack.back()->id == op.ELSE) {
                             deref(int, op_stack.back()->value) = i-1;
                             cout_debug(<< "setting else-2 which is: " << get_name(op_stack.back()->id) << endl);
                             op_stack.pop_back();
+                        } else {
+                            compiler_error("'if*' should only be used after an else, maybe you meant 'if'");
                         }
                     }
+                } else {
+                    compiler_error("'else' can only be used after if or if*");
                 }
                 
+            } else {
+                compiler_error("'else' is expected to be used after 'if' or 'if*' but nothing present");
             }
             op_stack.push_back(act);
         
         } elif (id == op.END) { // END
             if (!op_stack.empty()) {
+                if (bid != op.DO and bid != op.ELSE and bid != op.IF and bid != op.ELIF) compiler_error("'end' cannot be used after '" + get_name(bid) + "'");
+                bool is_else = bid == op.ELSE;
                 deref(int, op_stack.back()->value) = i;
-                cout_debug(<< "end cleared previous which was: " << get_name(op_stack.back()->id) << endl);
+                cout_debug(<< "END: cleared previous which was: " << get_name(op_stack.back()->id) << endl);
                 op_stack.pop_back();
-                if ((!op_stack.empty())) {
+                if ((!op_stack.empty()) and !is_else) {
                     if (op_stack.back()->id == op.WHILE) {
                         int temp = deref(int, op_stack.back()->value);
                         deref(int, act->value) = temp;
-                        cout_debug(<< "END: setting self to reference WHILE\n");
+                        cout_debug(<< "END: setting self to reference WHILE\n"); 
                         op_stack.pop_back();
                     } elif (op_stack.back()->id == op.ELSE) {
                         deref(int, op_stack.back()->value) = i;
@@ -653,9 +740,14 @@ void compute_crossreference(vector<action> &acts) {
                         op_stack.pop_back();
                         act->value = nullptr;
                     } else {
+                        cout_debug(<< "END: last is not crossreference-able\n");
                         act->value = nullptr;
                     }
+                } else {
+                    act->value = nullptr;
                 }
+            } else {
+                compiler_error("unexpected use of 'end'");
             }
         
         } elif (id == op.DO) { // DO
@@ -666,16 +758,24 @@ void compute_crossreference(vector<action> &acts) {
         }
           elif (id == op.PROC) {
             op_stack.push_back(act);
-            cout_debug(<< "setting up procedure name for: " << deref(string, acts[i].value) << endl);
-            references[deref(string, acts[i].value)] = i+1;
+            cout_debug(<< "PROC: setting up procedure name for: " << deref(string, acts[i].value) << endl);
+            proc_references[deref(string, acts[i].value)] = i+1;
         } elif (id == op.RET) {
+            if (op_stack.empty()) compiler_error("'return' must close 'proc' but there's nothing to close");
+            if (bid != op.PROC) compiler_error("'return' can only close 'proc' but got used after '" + get_name(bid) + "'");
             deref(int, op_stack.back()->value) = i; // set the PROC pointer to after the end so we skip the funzion at execution.
             op_stack.pop_back();
         }
+
         else {
             // printf_debug((" - instruction with name '%s' is not crossreference-able.\n", get_name(id).c_str()));
         }
-        printf_debug((" -- Done crossreferencing '%s'.\n", get_name(id).c_str()));
+        printf_debug((".Done crossreferencing '%s'.\n", get_name(id).c_str()));
+        cout_debug(<< "[");
+        for range(i, op_stack.size()) {
+            cout_debug(<< get_name(op_stack[i]->id) << "; ");
+        } cout_debug(<< "]\n");
+        printf_debug(("\n"));
     }
     if (!op_stack.empty()) {
         printf("ERROR: unmatched if or while statement.\n");
@@ -683,7 +783,7 @@ void compute_crossreference(vector<action> &acts) {
         for(action* a : op_stack) {
             cout << "\n\taction: " << get_name(a->id) << "\n";
         }
-        throw -1;
+        exit(-1);
     }
     cout_debug(<< "got to crossreferecing end\n");
 }
@@ -718,7 +818,7 @@ int inter_main(vector<action> &program, vector<void*> &stack){
                 break;
                 
 
-            } case 3: { // DUP 
+            } case 3: { // DUP
                 stack.push_back(new_ptr<void*>(stack.back()));
                 break;
                 
@@ -894,7 +994,7 @@ int inter_main(vector<action> &program, vector<void*> &stack){
                 
 
             } case 29: { // FREE
-                void* addr =  pop_value<void*>(stack);
+                void* addr = pop_value<void*>(stack);
                 free(addr);
                 break;
 
@@ -919,8 +1019,13 @@ int inter_main(vector<action> &program, vector<void*> &stack){
 
 
             } case 33: { // reference
-                address_stack.push_back(i);
-                i = references[deref(string, act.value)];
+                string refn = deref(string, act.value);
+                if (proc_references.contains(refn)) {
+                    address_stack.push_back(i);
+                    i = proc_references[refn];
+                } elif (let_references.contains(refn)) {
+                    push_to<void*>(stack, new_ptr<void*>(let_references[refn]));
+                }
                 // cout << "referencing to: " << deref(string, act.value) << ", setting IP to: " << i << endl;
                 break;
 
@@ -991,14 +1096,47 @@ int inter_main(vector<action> &program, vector<void*> &stack){
                 break;
 
                 
-            } case 43: {
+            } case 43: { // STK.LEN
                 int temp = stack.size();
                 push_to<int>(stack, new_ptr<int>(&temp));
                 break;
             
             
-            }
-            default:{
+            } case 44: { // CHDIR // SETCWD
+                string str = pop_value<string>(stack);
+                setcwd(str);
+                break;
+
+
+            } case 45: { // STRIP RIGHT
+                string str = deref(string, stack.back());
+                string str_right = str.substr(str.length()-1, str.length());
+                string str_left  = str.substr(0, str.length()-1);
+                push_to<string>(stack, new_ptr(str_left));
+                push_to<string>(stack, new_ptr(str_right));
+                break;
+
+
+            } case 46: {
+                string str = deref(string, stack.back());
+                int strlen = str.length();
+                push_to<int>(stack, new_ptr<int>(&strlen));
+                break;
+
+
+            } case 47: { // LET
+                break;
+            } case 48: { // LET NAME
+                // printf("called let name\n");
+                let_references[deref(string, act.value)] = new_ptr<void*>(stack.back());
+                stack.pop_back();
+                break;
+
+            } case 49: { // SOFT DROP
+                stack.pop_back();
+                break;
+            
+            } default:{
                 break;
                 
 
@@ -1006,10 +1144,10 @@ int inter_main(vector<action> &program, vector<void*> &stack){
         }
         # ifdef DEBUG
             stack_dump(stack);
-            // system("pause");
+            system("pause");
             cout << "instruction idx: " << i-1 << " with name " << get_name(act.id) << "\n";
             cout << "NEXT UP: idx: " << i << " with name " << get_name(program[i].id) << "\n";
         # endif
     }
-    // cout << references["swap_buffers"] << endl;
+    // cout << proc_references["swap_buffers"] << endl;
 }

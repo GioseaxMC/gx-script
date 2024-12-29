@@ -1,0 +1,19 @@
+while stk.len 0 > do
+    drop
+end
+
+3 4 * malloc let.ptr _xyz_HEAP
+
+proc COUNT _xyz_HEAP 0 4 * ptr+ R.int swap drop return
+proc _COUNT _xyz_HEAP 0 4 * ptr+ swap W.int drop return
+
+proc SIZES _xyz_HEAP 1 4 * ptr+ R.int swap drop return
+proc _SIZES _xyz_HEAP 1 4 * ptr+ swap W.int drop return
+
+proc LENGTH _xyz_HEAP 2 4 * ptr+ R.int swap drop return
+proc _LENGTH _xyz_HEAP 2 4 * ptr+ swap W.int drop return
+
+3 _LENGTH
+LENGTH 1 + _LENGTH
+
+LENGTH dump stack_dump

@@ -1,0 +1,11 @@
+#include <stdlib.gx>
+
+while ciao stk return
+
+for* 1 times*
+    1 if
+        "one" puts
+    else 
+        "zero" puts
+    end
+end

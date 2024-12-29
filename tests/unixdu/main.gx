@@ -1,0 +1,18 @@
+#include <prevars.gx>
+#include <stdlib.gx>
+
+#define IDX VAR0
+#define START VAR1
+
+stk.clear
+
+69 _START
+
+START _IDX
+
+while IDX 0 >= do
+    IDX dump
+    " - " puts
+    69 IDX - dumpln
+    IDX -- _IDX
+end
