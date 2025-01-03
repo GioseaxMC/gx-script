@@ -214,22 +214,26 @@ struct Token {
     Position pos;
 };
 
-struct action{
+void print_position(Token &tk) {
+    cout << tk.pos.file << ":" << tk.pos.row << ":" << tk.pos.col;
+}
+
+struct action {
     int id;
     void* value = malloc(sizeof(void*)); // alloc s(void*) bytes for pointers
-    
+
     Position pos;
 };
 
 template<typename T>
-action push(T value){
+action push(T value) {
     action temp;
     temp.id = op.PUSH;
     deref(int, temp.value) = value;
     return temp;
 }
 
-action sum(){
+action sum() {
     action temp;
     temp.id = op.PLUS;
     return temp;
@@ -555,124 +559,126 @@ void push_to(vector<void*> &stack, void* value){
     stack.push_back(value);
 }
 
-void parse_program(vector<Token> tokens, vector<action> &temp){
+void parse_program(vector<Token> tokens, vector<action> &action_vec){
     string str;
     Token tk;
     for(int i=0; i<tokens.size(); ++i) {
         tk = tokens[i];
         str = tk.text;
         if (str == "dump") {
-            temp.push_back(dump());
+            action_vec.push_back(dump());
         } elif (str == "dup") {
-            temp.push_back(dup());
+            action_vec.push_back(dup());
         } elif (str == "+") {
-            temp.push_back(sum());
+            action_vec.push_back(sum());
         } elif (str == "-") {
-            temp.push_back(sub());
+            action_vec.push_back(sub());
         } elif (str == "/") {
-            temp.push_back(div());
+            action_vec.push_back(div());
         } elif (str == "*") {
-            temp.push_back(mul());
+            action_vec.push_back(mul());
         } elif (is_numeric(str)) {
-            temp.push_back(push(stoi(str)));
+            action_vec.push_back(push(stoi(str)));
         } elif (str == "if") {
-            temp.push_back(iff());
+            action_vec.push_back(iff());
         } elif (str == "else") {
-            temp.push_back(_else());
+            action_vec.push_back(_else());
         } elif (str == "end") {
-            temp.push_back(end());
+            action_vec.push_back(end());
         } elif (str == "while") {
-            temp.push_back(whl());
+            action_vec.push_back(whl());
         } elif (str == "do") {
-            temp.push_back(doo());
+            action_vec.push_back(doo());
         } elif (str == "<") {
-            temp.push_back(lesst());
+            action_vec.push_back(lesst());
         } elif (str == ">") {
-            temp.push_back(bigger());
+            action_vec.push_back(bigger());
         } elif (str == "=") {
-            temp.push_back(cmp());
+            action_vec.push_back(cmp());
         } elif (str == "swap") {
-            temp.push_back(swap());
+            action_vec.push_back(swap());
         } elif (str == "rotate") {
-            temp.push_back(rotate());
+            action_vec.push_back(rotate());
         } elif (str == "stack_dump") {
-            temp.push_back(stk_dmp());
+            action_vec.push_back(stk_dmp());
         } elif (str == "drop") {
-            temp.push_back(drop());
+            action_vec.push_back(drop());
         } elif (str == "pause") {
-            temp.push_back(pause());
+            action_vec.push_back(pause());
         } elif (str == "newl") {
-            temp.push_back(newline());
+            action_vec.push_back(newline());
         } elif (represents_string(str)) {
             string strn = derep_str(str);
             action act = str_literal();
             free(act.value);
             act.value = new_ptr(strn);
             cout_debug(<< "pushed: '" << deref(string, act.value) << "'\n");
-            temp.push_back(act);
+            action_vec.push_back(act);
         } elif (str == "puts") {
-            temp.push_back(puts());
+            action_vec.push_back(puts());
         } elif (str == "str.cmp") {
-            temp.push_back(str_cmp());
+            action_vec.push_back(str_cmp());
         } elif (str == "str.dup") {
-            temp.push_back(str_dup());
+            action_vec.push_back(str_dup());
         } elif (str == "malloc") {
-            temp.push_back(alloc());
+            action_vec.push_back(alloc());
         } elif (str == "putp") {
-            temp.push_back(putp());
+            action_vec.push_back(putp());
         } elif (str == "R.int") {
-            temp.push_back(atint());
+            action_vec.push_back(atint());
         } elif (str == "W.int") {
-            temp.push_back(setint());
+            action_vec.push_back(setint());
         } elif (str == "free") {
-            temp.push_back(mfree());
+            action_vec.push_back(mfree());
         } elif (str == "&&") {
-            temp.push_back(_and());
+            action_vec.push_back(_and());
         } elif (str == "||") {
-            temp.push_back(_or());
+            action_vec.push_back(_or());
         } elif (str == "proc") {
-            temp.push_back(proc());
-            temp.push_back(proc_name(tokens[++i].text));
+            action_vec.push_back(proc());
+            action_vec.push_back(proc_name(tokens[++i].text));
             cout_debug(<< "declared proc: " << tokens[i].text << endl);
         } elif (str == "return") {
-            temp.push_back(ret());
+            action_vec.push_back(ret());
         } elif (str == "ptr+") {
-            temp.push_back(ptr_sum());
+            action_vec.push_back(ptr_sum());
         } elif (str == "if*") {
-            temp.push_back(_elif());
+            action_vec.push_back(_elif());
         } elif (str == "stoi") {
-            temp.push_back(_stoi());
+            action_vec.push_back(_stoi());
         } elif (str == "input") {
-            temp.push_back(input());
+            action_vec.push_back(input());
         } elif (str == "system") {
-            temp.push_back(_system());
+            action_vec.push_back(_system());
         } elif (str == "strsum") {
-            temp.push_back(str_sum());
+            action_vec.push_back(str_sum());
         } elif (str == "read_file") {
-            temp.push_back(_read_file());
+            action_vec.push_back(_read_file());
         } elif (str == "stk.len") {
-            temp.push_back(_stack_len());
+            action_vec.push_back(_stack_len());
         } elif (str == "chdir") {
-            temp.push_back(_setcwd());
+            action_vec.push_back(_setcwd());
         } elif (str == "str.rstrip") {
-            temp.push_back(_strright());
+            action_vec.push_back(_strright());
         } elif (str == "str.len") {
-            temp.push_back(_strlen());
+            action_vec.push_back(_strlen());
         } elif (str == "let.ptr") {
-            temp.push_back(_let());
-            temp.push_back(_let_name(tokens[++i].text));
+            action_vec.push_back(_let());
+            action_vec.push_back(_let_name(tokens[++i].text));
             cout_debug(<< "declared let: " << tokens[i].text << endl);
         } elif (str == "soft-drop") {
-            temp.push_back(soft_drop());
+            action_vec.push_back(soft_drop());
         }
         else {
             if (proc_references.contains(str)) {
-                temp.push_back(ref(str));
+                action_vec.push_back(ref(str));
                 cout_debug(<< "referenced: " << str << endl);
             } elif (let_references.contains(str)) {
-                temp.push_back(ref(str));
+                action_vec.push_back(ref(str));
             } else {
-                printf("unknown instruction '%s' at position '%i'\n", str.c_str(), i);
+                print_position(tk);
+                cout << ": error: unknown word: '" << tk.text << "'\n";
+                exit(-1);
             }   
         }
     }

@@ -26,12 +26,12 @@ int main(int argc, char** argv) {
         string dir_name = path(file_name).dir_name()();
         vector<Token> tokens;
         init_file(file_name, tokens);
-        for (Token t in tokens) {
-            cout << "token: " << t.text << " @: ";
-            print_position(t);
-            cout << endl;
-        }
         # ifdef DEBUG
+            for (Token t in tokens) {
+                cout << "token: " << t.text << " @: ";
+                print_position(t);
+                cout << endl;
+            }
             cout << "\n--" << file << "\n--\n";
         # endif
         vector<action> program;

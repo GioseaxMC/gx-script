@@ -1,9 +1,5 @@
 # include "inter.h"
 
-void print_position(Token &tk) {
-    cout << tk.pos.file << ":" << tk.pos.row << ":" << tk.pos.col;
-}
-
 Token calculate_start_position(Token tk) {
     tk.pos.col -= tk.text.length()+1;
     return tk;
