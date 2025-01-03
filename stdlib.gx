@@ -131,3 +131,16 @@ proc appendln
     "echo " swap strsum
     ">> " strsum swap strsum system
 return
+
+# allocation for iota's procedures
+sizeof(int) malloc let.ptr __iota_ptr__
+
+# {0} -- iota+1 
+proc iota()
+    __iota_ptr__ R.int ++ dup rotate swap W.int drop
+return
+
+# {0} -- iota=0
+proc iota(1)
+    __iota_ptr__ 0 W.int 0 swap drop
+return

@@ -1,0 +1,15 @@
+#include <stdlib.gx>
+
+stk.clear
+
+"starting iota: " puts iota(1) println
+
+for* 64 times*
+    "iterative iota: " puts iota() println
+end
+
+"resetting iota: " puts iota(1) println
+
+for* 64 times*
+    "second iteratiove iota " puts iota() println
+end
