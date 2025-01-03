@@ -203,12 +203,22 @@ string get_name(int idx) {
     }
 }
 
-struct action{
+struct Position {
+    string file;
     int row;
     int col;
-    string* file_name;
+};
+
+struct Token {
+    string text;
+    Position pos;
+};
+
+struct action{
     int id;
     void* value = malloc(sizeof(void*)); // alloc s(void*) bytes for pointers
+    
+    Position pos;
 };
 
 template<typename T>
@@ -545,10 +555,12 @@ void push_to(vector<void*> &stack, void* value){
     stack.push_back(value);
 }
 
-void parse_program(vector<string> tokens, vector<action> &temp){
+void parse_program(vector<Token> tokens, vector<action> &temp){
     string str;
+    Token tk;
     for(int i=0; i<tokens.size(); ++i) {
-        str = tokens[i];
+        tk = tokens[i];
+        str = tk.text;
         if (str == "dump") {
             temp.push_back(dump());
         } elif (str == "dup") {
@@ -620,8 +632,8 @@ void parse_program(vector<string> tokens, vector<action> &temp){
             temp.push_back(_or());
         } elif (str == "proc") {
             temp.push_back(proc());
-            temp.push_back(proc_name(tokens[++i]));
-            cout_debug(<< "declared proc: " << tokens[i] << endl);
+            temp.push_back(proc_name(tokens[++i].text));
+            cout_debug(<< "declared proc: " << tokens[i].text << endl);
         } elif (str == "return") {
             temp.push_back(ret());
         } elif (str == "ptr+") {
@@ -648,8 +660,8 @@ void parse_program(vector<string> tokens, vector<action> &temp){
             temp.push_back(_strlen());
         } elif (str == "let.ptr") {
             temp.push_back(_let());
-            temp.push_back(_let_name(tokens[++i]));
-            cout_debug(<< "declared let: " << tokens[i] << endl);
+            temp.push_back(_let_name(tokens[++i].text));
+            cout_debug(<< "declared let: " << tokens[i].text << endl);
         } elif (str == "soft-drop") {
             temp.push_back(soft_drop());
         }

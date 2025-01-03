@@ -1,24 +1,47 @@
 # include "inter.h"
 
-vector<string> parse_tokens(string &file, vector<vector<int>> positions){
-    vector<string> tokens;
-    string token;
+void print_position(Token &tk) {
+    cout << tk.pos.file << ":" << tk.pos.row << ":" << tk.pos.col;
+}
+
+Token calculate_start_position(Token tk) {
+    tk.pos.col -= tk.text.length()+1;
+    return tk;
+}
+
+vector<string> tokens_to_strs(vector<Token> &tokens) {
+    vector<string> tempv;
+    for (Token t : tokens) {
+        tempv.push_back(t.text);
+    }
+    return tempv;
+}
+
+void parse_tokens(string &file, string &file_name, vector<Token> &tokens){
+    Token temp_tk;
+    temp_tk.pos.file = file_name;
+    temp_tk.pos.row = 1;
+    temp_tk.pos.col = 1;
     for(int i=0; i<file.length(); i++) {
         char c = file[i];
+        temp_tk.pos.col++;
         if (is_delim(c, delims)) {
-            if (token.length()){
-                tokens.push_back(token);
+            if (temp_tk.text.length()){
+                tokens.push_back(calculate_start_position(temp_tk));
             }
-            if (!is_delim(c, " \n\"")) {
-                tokens.push_back(string(1, c));
+            if (c == '\n') {
+                temp_tk.pos.row++;
+                temp_tk.pos.col = 1;
             }
             if (is_delim(c, "<")) {
                 string temp;
                 temp += c;
                 while (1) {
                     c = file[++i];
+                    temp_tk.pos.col++;
                     if (c == '\\') {
                         c = file[++i];
+                        temp_tk.pos.col++;
                         if (c == 'n') {
                             temp += '\n';
                         } elif (c == 't') {
@@ -37,17 +60,19 @@ vector<string> parse_tokens(string &file, vector<vector<int>> positions){
                     }
                 }
                 cout_debug(<< "head: '" << temp << "'\n");
-
-                tokens.push_back(temp);
-                temp.clear();
+                temp_tk.text = temp;
+                tokens.push_back(calculate_start_position(temp_tk));
+                temp_tk.text.clear();
             }
             if (is_delim(c, "\"")) {
                 string temp;
                 temp += c;
                 while (1) {
                     c = file[++i];
+                    temp_tk.pos.col++;
                     if (c == '\\') {
                         c = file[++i];
+                        temp_tk.pos.col++;
                         if (c == 'n') {
                             temp += '\n';
                         } elif (c == 't') {
@@ -68,19 +93,19 @@ vector<string> parse_tokens(string &file, vector<vector<int>> positions){
                     }
                 }
                 cout_debug(<< "str: '" << temp << "'\n");
-                tokens.push_back(temp);
-                temp.clear();
+                temp_tk.text = temp;
+                tokens.push_back(calculate_start_position(temp_tk));
+                temp_tk.text.clear();
             }
-            token.clear();
+            temp_tk.text.clear();
         } else {
-            token += c;
+            temp_tk.text += c;
         }
     }
-    if (token.length()) {
-        cout_debug(<< "tk: '" << token << "'\n");
-        tokens.push_back(token);
+    if (temp_tk.text.length()) {
+        cout_debug(<< "tk: '" << temp_tk.text << "'\n");
+        tokens.push_back(calculate_start_position(temp_tk));
     }
-    return tokens;
 }
 
 int find(string &haystack, string needle, int &__end_position) {
@@ -99,29 +124,33 @@ string get_line(string &file, int __start_pos) {
     return temp;
 }
 
-void handle_inclusion(string &file, string file_name) {
+void init_file(...);void init_file(string file_name, vector<Token> &tokens);
+
+void handle_inclusion(string &file, string &file_name, vector<Token> &global_tokens) {
     int str_position;
     while (find(file, "#include", str_position) != string::npos) {
         cout_debug(<< ".");
-        path p2 = file_name;
+        path p2;
         string line = get_line(file, str_position);
         cout_debug(<< str_position << endl);
-        vector<vector<int>> _;
-        vector<string> tks = parse_tokens(line, _);
-        _.clear();
+        vector<Token> tokens;
+        parse_tokens(line, file_name, tokens);
+        vector<string> tks = tokens_to_strs(tokens);
+        tokens.clear();
         int header_type = (int)represents_string(tks[1]) - (int)represents_header(tks[1]); // 1 if local else -1
         if (header_type) {
             string target_header = derep_str(tks[1]);
             path header_path = target_header;
-            cout_debug(<< "INCLUDE: including file at '" << p2 << "'\n"); 
+            cout_debug(<< "INCLUDE: including file at '" << p2 << "'\n");
             if (header_type == 1) {
                 p2 = p2.dir_name();
                 p2 += header_path;
             } elif (header_type == -1) {
                 p2 = header_path;
             }
-            file.erase(str_position, line.length());
-            file.insert(str_position, read_file(p2())+"\n");
+            file.erase(str_position, line.length()-1);
+            // file.insert(str_position, read_file(p2())+"\n");
+            init_file(p2(), global_tokens);
         } else {
             cout << "ERROR: Inclusion failed in:\n\t - " << p2 << ":" << /* line name << */ ":" << 10 << "\n";
             exit(-1);
@@ -129,14 +158,15 @@ void handle_inclusion(string &file, string file_name) {
     }
 }
 
-void handle_defines(string &file, string file_name) {
+void handle_defines(string &file, string &file_name) {
     int define_pos;
     while(find(file, "#define", define_pos) != string::npos){
         string line = get_line(file, define_pos);
         replace_where(file, line, "");
-        vector<vector<int>> _;
-        vector<string> tks = parse_tokens(line, _);
-        _.clear();
+        vector<Token> tokens;
+        parse_tokens(line, file_name, tokens);
+        vector<string> tks = tokens_to_strs(tokens);
+        tokens.clear();
         string target = tks[1];
         string substr = join(" ", tks, 2);
         replace_where(file, target+"\n", substr+"\n");
@@ -163,12 +193,12 @@ void remove_comments(string &file) {
     }
 }
 
-string init_file(string file_name){
+void init_file(string file_name, vector<Token> &tokens){
     string file = read_file(file_name);
-    handle_inclusion(file, file_name);
-    handle_semicolons(file);
+    handle_inclusion(file, file_name, tokens);
+    // handle_semicolons(file);
     handle_defines(file, file_name);
     remove_comments(file);
     cout_debug(<< file << endl);
-    return file;
+    parse_tokens(file, file_name, tokens);
 }

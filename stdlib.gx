@@ -1,17 +1,17 @@
 proc dup_to_third dup rotate rotate return
 proc dup_third_str str.dup rotate rotate return
 
-proc dup_2;
-    swap dup_to_third;
+proc dup_2
+    swap dup_to_third
     swap dup_to_third
 return
 
-proc str.dup2;
-    swap dup_third_str;
+proc str.dup2
+    swap dup_third_str
     swap dup_third_str
 return
 
-proc dup_second;
+proc dup_second
         swap dup rotate
 return
 
@@ -24,7 +24,7 @@ proc println dup dump newl return
 proc print dup dump return
 proc space " " puts return
  
-proc not;
+proc not
     if 0 else 2 end
 return
 
@@ -54,7 +54,7 @@ proc false 0 return
 proc true  1 return
 
 # =====================================================\
-#
+
 # for:
 #     after the first iteration, for expects idx to be
 #     the last item of the stack.
@@ -64,10 +64,7 @@ proc true  1 return
 # end:
 #     idx should be the last item of the stack when it
 #     is reached.
-#
-#define for*     -1 while dup
-#define times*   -- < do ++
-#
+
 # =====================================================/
 
 proc say puts return

@@ -3,6 +3,8 @@
 
 # include "libs\parser.h"
 
+#define in :
+
 using namespace std;
 
 vector<string> arguments;
@@ -22,12 +24,16 @@ int main(int argc, char** argv) {
     if (argc >= 2) {
         string file_name = arguments[1];
         string dir_name = path(file_name).dir_name()();
-        string file = init_file(file_name);
+        vector<Token> tokens;
+        init_file(file_name, tokens);
+        for (Token t in tokens) {
+            cout << "token: " << t.text << " @: ";
+            print_position(t);
+            cout << endl;
+        }
         # ifdef DEBUG
             cout << "\n--" << file << "\n--\n";
         # endif
-        vector<vector<int>> t_positions;
-        vector<string> tokens = parse_tokens(file, t_positions);
         vector<action> program;
         parse_program(tokens, program);
         compute_crossreference(program);
