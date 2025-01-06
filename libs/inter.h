@@ -219,7 +219,7 @@ struct Token {
 
 struct action {
     int id;
-    void* value = malloc(sizeof(void*)); // alloc s(void*) bytes for pointers
+    void* value = malloc(sizeof(void*)); // alloc s(void*) bytes for pointers.
 
     Position pos;
 };
