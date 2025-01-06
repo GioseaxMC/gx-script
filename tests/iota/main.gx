@@ -4,8 +4,6 @@ stk.clear
 
 "starting iota: " puts iota(1) println
 
-        ewifoiewgreuhgieruhgiuerhg
-
 "called iota: " puts iota() println
 "called iota: " puts iota() println
 "called iota: " puts iota() println
@@ -14,3 +12,5 @@ stk.clear
 "called iota: " puts iota() println
 
 "resetting iota: " puts iota(1) println
+
+if

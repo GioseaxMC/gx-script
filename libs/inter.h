@@ -214,9 +214,8 @@ struct Token {
     Position pos;
 };
 
-void print_position(Token &tk) {
+#define print_position(tk) \
     cout << tk.pos.file << ":" << tk.pos.row << ":" << tk.pos.col;
-}
 
 struct action {
     int id;
@@ -535,10 +534,13 @@ action soft_drop() {
     return temp;
 }
 
-void compiler_error(string str) {
-    cout << "ERROR: " << str << "\n";
+void compiler_error(action& act, string err_t, string str) {
+    print_position(act);
+    cout << ": " << err_t << ": " << str << "\n";
     exit(-1);
 }
+
+action CURRENT_ACT;
 
 template<typename T>
 T pop_value(vector<void*> &stack) {
@@ -549,7 +551,7 @@ T pop_value(vector<void*> &stack) {
         stack.pop_back();
         return x;
     } else {
-        compiler_error("Segmentation fault : stack size is: " + string(1, stack.size()));
+        compiler_error(CURRENT_ACT, "Segmentation fault", "stack size is: " + string(1, stack.size()));
     }
 }
 
@@ -636,6 +638,7 @@ void parse_program(vector<Token> tokens, vector<action> &action_vec){
             action_vec.push_back(_or());
         } elif (str == "proc") {
             action_vec.push_back(proc());
+            action_vec.back().pos = tk.pos;
             action_vec.push_back(proc_name(tokens[++i].text));
             cout_debug(<< "declared proc: " << tokens[i].text << endl);
         } elif (str == "return") {
@@ -664,6 +667,7 @@ void parse_program(vector<Token> tokens, vector<action> &action_vec){
             action_vec.push_back(_strlen());
         } elif (str == "let.ptr") {
             action_vec.push_back(_let());
+            action_vec.back().pos = tk.pos;
             action_vec.push_back(_let_name(tokens[++i].text));
             cout_debug(<< "declared let: " << tokens[i].text << endl);
         } elif (str == "soft-drop") {
@@ -677,10 +681,16 @@ void parse_program(vector<Token> tokens, vector<action> &action_vec){
                 action_vec.push_back(ref(str));
             } else {
                 print_position(tk);
-                cout << ": error: unknown word: '" << tk.text << "'\n";
+                cout << ": error: unknown word '" << tk.text << "'\n";
                 exit(-1);
             }   
         }
+        action_vec.back().pos = tk.pos;
+        // cout << "checking:\n";
+        // print_position(tk);
+        // cout << "\n";
+        // print_position(action_vec.back());
+        // cout << "\n";
     }
 }
 
@@ -721,27 +731,27 @@ void compute_crossreference(vector<action> &acts) {
                     cout_debug(<< "setting else-1 which is: " << get_name(op_stack.back()->id) << endl);
                     op_stack.pop_back();
                     if (type == -1) {
-                        if (op_stack.empty()) compiler_error("'if*' should only be used after an else, maybe you meant 'if'");
+                        if (op_stack.empty()) compiler_error(*act, "crossreference error", "'if*' should only be used after an else, maybe you meant 'if'");
                         if (op_stack.back()->id == op.ELSE) {
                             deref(int, op_stack.back()->value) = i-1;
                             cout_debug(<< "setting else-2 which is: " << get_name(op_stack.back()->id) << endl);
                             op_stack.pop_back();
                         } else {
-                            compiler_error("'if*' should only be used after an else, maybe you meant 'if'");
+                            compiler_error(*act, "crossreference error", "'if*' should only be used after an else, maybe you meant 'if'");
                         }
                     }
                 } else {
-                    compiler_error("'else' can only be used after if or if*");
+                    compiler_error(*act, "crossreference error", "'else' can only be used after if or if*");
                 }
                 
             } else {
-                compiler_error("'else' is expected to be used after 'if' or 'if*' but nothing present");
+                compiler_error(*act, "crossreference error", "'else' is expected to be used after 'if' or 'if*' but nothing present");
             }
             op_stack.push_back(act);
         
         } elif (id == op.END) { // END
             if (!op_stack.empty()) {
-                if (bid != op.DO and bid != op.ELSE and bid != op.IF and bid != op.ELIF) compiler_error("'end' cannot be used after '" + get_name(bid) + "'");
+                if (bid != op.DO and bid != op.ELSE and bid != op.IF and bid != op.ELIF) compiler_error(*act, "crossreference error", "'end' cannot be used after '" + get_name(bid) + "'");
                 bool is_else = bid == op.ELSE;
                 deref(int, op_stack.back()->value) = i;
                 cout_debug(<< "END: cleared previous which was: " << get_name(op_stack.back()->id) << endl);
@@ -765,7 +775,7 @@ void compute_crossreference(vector<action> &acts) {
                     act->value = nullptr;
                 }
             } else {
-                compiler_error("unexpected use of 'end'");
+                compiler_error(*act, "crossreference error", "unexpected use of 'end'");
             }
         
         } elif (id == op.DO) { // DO
@@ -776,11 +786,12 @@ void compute_crossreference(vector<action> &acts) {
         }
           elif (id == op.PROC) {
             op_stack.push_back(act);
+            // print_position((*act));
             cout_debug(<< "PROC: setting up procedure name for: " << deref(string, acts[i].value) << endl);
             proc_references[deref(string, acts[i].value)] = i+1;
         } elif (id == op.RET) {
-            if (op_stack.empty()) compiler_error("'return' must close 'proc' but there's nothing to close");
-            if (bid != op.PROC) compiler_error("'return' can only close 'proc' but got used after '" + get_name(bid) + "'");
+            if (op_stack.empty()) compiler_error(*act, "crossreference error", "'return' must close 'proc' but there's nothing to close");
+            if (bid != op.PROC) compiler_error(*act, "crossreference error", "'return' can only close 'proc' but got used after '" + get_name(bid) + "'");
             deref(int, op_stack.back()->value) = i; // set the PROC pointer to after the end so we skip the funzion at execution.
             op_stack.pop_back();
         }
@@ -796,10 +807,12 @@ void compute_crossreference(vector<action> &acts) {
         printf_debug(("\n"));
     }
     if (!op_stack.empty()) {
-        printf("ERROR: unmatched if or while statement.\n");
+        printf("ERROR: unmatched if, while statement or procedure.\n");
         cout << "crossreference stack dump:\n";
         for(action* a : op_stack) {
-            cout << "\n\taction: " << get_name(a->id) << "\n";
+            cout << "file: " << a->pos.file;
+            // print_position(a);
+            cout << " action: " << get_name(a->id) << "\n";
         }
         exit(-1);
     }
@@ -813,6 +826,7 @@ int inter_main(vector<action> &program, vector<void*> &stack){
     int i = 0;
     while (i < program.size()) {
         action& act = program[i];
+        CURRENT_ACT = program[i];
         cout_debug(<< "intepreting act at:" << i << "\n\ttype = " << get_name(act.id) << \
                 ",\n\t(int)value = " << deref(int, act.value) << ",\n\t(int)value = " << deref(int, act.value) << "\n");
         ++i;
@@ -1163,8 +1177,8 @@ int inter_main(vector<action> &program, vector<void*> &stack){
         # ifdef DEBUG
             stack_dump(stack);
             system("pause");
-            cout << "instruction idx: " << i-1 << " with name " << get_name(act.id) << "\n";
             cout << "NEXT UP: idx: " << i << " with name " << get_name(program[i].id) << "\n";
+            cout << "instruction idx: " << i-1 << " with name " << get_name(act.id) << " @ ";
         # endif
     }
     // cout << proc_references["swap_buffers"] << endl;
